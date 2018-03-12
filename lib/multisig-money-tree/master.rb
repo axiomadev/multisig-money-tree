@@ -24,9 +24,10 @@ module MultisigMoneyTree
       
       def from_bip45(public_key)
         hex = from_serialized_base58(public_key)
-        count, *public_keys = [hex].pack("H*").split(";")
+        network, count, *public_keys = [hex].pack("H*").split(";")
         
         BIP45Node.new({
+          network: network.to_sym,
           required_sings: count.to_i,
           public_keys: public_keys
         })

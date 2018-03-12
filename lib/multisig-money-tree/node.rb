@@ -17,7 +17,7 @@ module MultisigMoneyTree
   class BIP45Node < Node
     class InvalidParams < StandardError; end
     
-    attr_reader :public_keys, :required_sings, :address, :redeem_script
+    attr_reader :public_keys, :required_sings, :address, :redeem_script, :network
     
     def initialize(opts = {})
       opts.each { |k, v| instance_variable_set "@#{k}", v }
@@ -35,7 +35,9 @@ module MultisigMoneyTree
       @redeem_script
     end
 
-    def to_bip45
+    def to_bip45(network: :bitcoin)
+      @network = network
+
       raise InvalidParams unless check_bip45_opts
 
       to_serialized_base58(to_serialized_hex)
@@ -44,7 +46,7 @@ module MultisigMoneyTree
     private
     
     def to_serialized_hex
-      opts = [@required_sings.to_s]
+      opts = [@network.to_s, @required_sings.to_s]
       @public_keys.each do |key|
         opts << key
       end
@@ -52,6 +54,7 @@ module MultisigMoneyTree
     end
     
     def check_bip45_opts
+      @network ||= :bitcoin
       @required_sings > 0 && @public_keys.size >= @required_sings
     end
   end
