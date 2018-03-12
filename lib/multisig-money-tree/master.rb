@@ -1,6 +1,6 @@
 module MultisigMoneyTree
   class Master < Node
-    attr_reader :cosigner_index, :master, :cosigner_master_key, :is_private
+    attr_reader :cosigner_index, :master, :cosigner_master_key
     
     class << self
       def seed(cosigner_index, network = :bitcoin)
@@ -17,8 +17,7 @@ module MultisigMoneyTree
         self.new({
           cosigner_index: cosigner_index,
           cosigner_master_key: cosigner_master_key,
-          master: @master,
-          is_private: !@master.private_key.nil?
+          master: @master
         })
       end
       
@@ -28,7 +27,7 @@ module MultisigMoneyTree
         
         BIP45Node.new({
           network: network.to_sym,
-          required_sings: count.to_i,
+          required_signs: count.to_i,
           public_keys: public_keys
         })
       end
@@ -38,8 +37,12 @@ module MultisigMoneyTree
       opts.each { |k, v| instance_variable_set "@#{k}", v }
     end
     
+    def private_key?
+      !@master.private_key.nil?
+    end
+
     def node_for(change, index)
-      private_flag = @is_private ? 'm' : 'M'
+      private_flag = private_key? ? 'm' : 'M'
       node = @master.node_for_path "#{private_flag}/45/#{@cosigner_index}/#{change}/#{index}"
       Node.new({
         node: node,
