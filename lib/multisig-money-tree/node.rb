@@ -25,14 +25,16 @@ module MultisigMoneyTree
     
     def to_address
       raise InvalidParams unless check_bip45_opts
-      @public_keys.sort! { |a,b| a <=> b}
-      @address, @redeem_script = Bitcoin.pubkeys_to_p2sh_multisig_address(@required_sings, *@public_keys)
       
+      @address, @redeem_script = Bitcoin.pubkeys_to_p2sh_multisig_address(@required_sings, *@public_keys)
+        
       @address
     end
     
     def redeem_script
-      @redeem_script
+      raise InvalidParams unless check_bip45_opts
+      
+      @redeem_script ||= Bitcoin::Script.to_p2sh_multisig_script(@required_sings, *@public_keys).last
     end
 
     def to_bip45(network: :bitcoin)
@@ -55,6 +57,11 @@ module MultisigMoneyTree
     
     def check_bip45_opts
       @network ||= :bitcoin
+      
+      # https://github.com/bitcoin/bips/blob/master/bip-0045.mediawiki#cosigner-index
+      # Quote: The indices can be determined independently by lexicographically sorting the purpose public keys of each cosigner
+      @public_keys.sort! { |a,b| a <=> b}
+      
       @required_sings > 0 && @public_keys.size >= @required_sings
     end
   end
