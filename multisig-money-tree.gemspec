@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "ffi"
   spec.add_dependency "bitcoin-ruby"
+  spec.add_dependency "rdoc"
   
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency 'byebug', '~> 9.1'

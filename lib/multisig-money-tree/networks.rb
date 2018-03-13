@@ -2,6 +2,7 @@ module MultisigMoneyTree
   @@networks = Bitcoin::NETWORKS
   @@network = :bitcoin
   
+  # Merge ThiBestCoin networks configuration to Bitcoin gem
   begin
     @@networks[:bitcoin_testnet] = @@networks[:testnet]
     @@networks.merge!(
@@ -34,11 +35,13 @@ module MultisigMoneyTree
     Bitcoin.network = @@network
   end
   
+  # Set network to Bitcoin gem
   def self.network=(network)
     raise Errors::NetworkNotFound unless @@networks.key?(network.to_sym)
     @@network = Bitcoin.network = network.to_sym
   end
   
+  # Get current network
   def self.network
     @@network
   end
