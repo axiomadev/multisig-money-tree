@@ -47,7 +47,7 @@ cs_1_public_node = {
     address: cs_1_deposit_node.to_address(network: NETWORK)
 }
 ```
-In the same way, we initialize the node for the cosiner # 2
+In the same way, we initialize the node for the cosigner # 2
 
 ### Create multisig node
 

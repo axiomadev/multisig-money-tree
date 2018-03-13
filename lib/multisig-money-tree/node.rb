@@ -3,7 +3,14 @@ module MultisigMoneyTree
     include Support
     extend Support
     
-    attr_reader :node, :change, :cosigner_index, :index, :cosigner_master_key
+    # Cosigner index
+    attr_reader :cosigner_index
+    # Cosigner master key
+    attr_reader :cosigner_master_key
+    # Instace of MultisigTree::Node
+    attr_reader :node
+    
+    attr_reader :change, :index
 
     def initialize(opts = {})
       opts.each { |k, v| instance_variable_set "@#{k}", v }
