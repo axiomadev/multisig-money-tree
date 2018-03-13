@@ -68,13 +68,13 @@ module MultisigMoneyTree
       @public_keys.sort! { |a,b| a <=> b}
 
       # bitcoin-ruby work with compressed_hex pubkeys
-      raise InvalidParams, "Expected to be compressed public keys" unless @public_keys.all?{|key| compressed_hex_format?(key) }
+      raise Errors::InvalidParams, "Expected to be compressed public keys" unless @public_keys.all?{|key| compressed_hex_format?(key) }
 
       # https://github.com/bitcoin/bips/blob/master/bip-0045.mediawiki#address-gap-limit
       # Quote: Address gap limit is currently set to 20. 
       #        Wallet software should warn when user is trying to exceed the gap limit on an external chain by generating a new address. 
-      raise InvalidParams, "Address gap limit" unless [@required_signs, @public_keys.size].all?{|i| (0..20).include?(i) }
-      raise InvalidParams, "Invalid m-of-n number" if @public_keys.size < @required_signs
+      raise Errors::InvalidParams, "Address gap limit" unless [@required_signs, @public_keys.size].all?{|i| (0..20).include?(i) }
+      raise Errors::InvalidParams, "Invalid m-of-n number" if @public_keys.size < @required_signs
     end
   end
 end
