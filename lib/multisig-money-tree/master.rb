@@ -3,8 +3,9 @@ module MultisigMoneyTree
     attr_reader :cosigner_index, :master, :cosigner_master_key
     
     class << self
-      def seed(cosigner_index, network = :bitcoin)
-        @master = MoneyTree::Master.new network: network
+      def seed(cosigner_index, network: :bitcoin)
+        MultisigMoneyTree.network = network
+        @master = MoneyTree::Master.new network: MultisigMoneyTree.network
         Node.new({
           cosigner_index: cosigner_index,
           node: @master.node_for_path('m/45')
@@ -13,7 +14,7 @@ module MultisigMoneyTree
       
       def from_bip32(cosigner_index, cosigner_master_key)
         @master = MoneyTree::Node.from_bip32(cosigner_master_key)
-      
+
         self.new({
           cosigner_index: cosigner_index,
           cosigner_master_key: cosigner_master_key,
@@ -24,7 +25,7 @@ module MultisigMoneyTree
       def from_bip45(public_key)
         hex = from_serialized_base58(public_key)
         network, count, *public_keys = [hex].pack("H*").split(";")
-        
+
         BIP45Node.new({
           network: network.to_sym,
           required_signs: count.to_i,
