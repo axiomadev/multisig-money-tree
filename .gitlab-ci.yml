@@ -1,6 +1,7 @@
 stages:
   - test
   - development
+  - deploy
 
 before_script:
   - ruby -v
@@ -24,6 +25,7 @@ test_demo:
     - bundle exec rspec
     - echo "Testing completed"
 
+
 docs:
   stage: development
   environment:
@@ -46,8 +48,9 @@ docs:
     paths:
       - rdoc/
 
+
 pages:
-  stage: development
+  stage: deploy
   dependencies:
     - docs
   script:
