@@ -37,9 +37,9 @@ module MultisigMoneyTree
         begin
           @master = MoneyTree::Node.from_bip32(cosigner_master_key)
         rescue MoneyTree::Node::ImportError => e
-          raise Errors::ImportError, e.message
+          raise Error::ImportError, e.message
         rescue EncodingError => e
-          raise Errors::ChecksumError, 'Invalid checksum in key'
+          raise Error::ChecksumError, 'Invalid checksum in key'
         end
 
         self.new({
@@ -58,7 +58,7 @@ module MultisigMoneyTree
       def from_bip45(public_key)
         hex = from_serialized_base58(public_key)
         network, count, *public_keys = [hex].pack("H*").split(";")
-
+        
         BIP45Node.new({
           network: network.to_sym,
           required_signs: count.to_i,

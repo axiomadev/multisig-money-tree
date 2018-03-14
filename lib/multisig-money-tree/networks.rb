@@ -37,7 +37,7 @@ module MultisigMoneyTree
   
   # Set network to Bitcoin gem
   def self.network=(network)
-    raise Errors::NetworkNotFound unless @@networks.key?(network.to_sym)
+    raise Error::NetworkNotFound unless @@networks.key?(network.to_sym)
     @@network = Bitcoin.network = network.to_sym
   end
   

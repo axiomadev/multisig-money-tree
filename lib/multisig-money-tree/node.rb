@@ -49,6 +49,8 @@ module MultisigMoneyTree
     #     pubkey = multisig_node.to_bip45 => oVyvtw3qzSwskwn9txvNnYKH7Nn36GfjV29NH8FYJEH5Zx2JUiTWNpENTc7RzUjydmnvZwtAmmwj8VnL9Sn6NHtGq3AioNbWTXA9B7eBWu5nWDtYkQ3CigiyfqAHGSujHm9RGBm3u3tS4uFsDf6bHZ5wUJSFriVvRfdrStypxWgV63BcMv4uJtMRE4CvxpaWmm37AshqBHGAx8mVpPd4sG8qj
     def initialize(opts = {})
       opts.each { |k, v| instance_variable_set "@#{k}", v }
+      
+      check_bip45_opts
     end
     
     # Generate multisig address
@@ -78,6 +80,20 @@ module MultisigMoneyTree
     # Returned Symbol network name
     def network
       @network ||= :bitcoin
+    end
+    
+    # Get number required signs
+    # ==== Result
+    # Returned Integer number required signs
+    def required_signs
+      @required_signs
+    end
+    
+    # Get list public keys
+    # ==== Result
+    # Returned Array public keys
+    def public_keys
+      @public_keys
     end
 
     # Generate BIP45 public key
@@ -114,13 +130,13 @@ module MultisigMoneyTree
       @public_keys.sort! { |a,b| a <=> b}
 
       # bitcoin-ruby work with compressed_hex pubkeys
-      raise Errors::InvalidParams, "Expected to be compressed public keys" unless @public_keys.all?{|key| compressed_hex_format?(key) }
+      raise Error::InvalidParams, "Expected to be compressed public keys" unless @public_keys.all?{|key| compressed_hex_format?(key) }
 
       # https://github.com/bitcoin/bips/blob/master/bip-0045.mediawiki#address-gap-limit
       # Quote: Address gap limit is currently set to 20. 
       #        Wallet software should warn when user is trying to exceed the gap limit on an external chain by generating a new address. 
-      raise Errors::InvalidParams, "Address gap limit" unless [@required_signs, @public_keys.size].all?{|i| (0..20).include?(i) }
-      raise Errors::InvalidParams, "Invalid m-of-n number" if @public_keys.size < @required_signs
+      raise Error::InvalidParams, "Address gap limit" unless [@required_signs, @public_keys.size].all?{|i| (0..20).include?(i) }
+      raise Error::InvalidParams, "Invalid m-of-n number" if @public_keys.size < @required_signs
     end
   end
 end
