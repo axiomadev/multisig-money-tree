@@ -1,3 +1,5 @@
+[![Coverage report](http://lab.axioma.lv/a.korol/multisig-money-tree/badges/development/coverage.svg?job=coverage)](http://lab.axioma.lv/a.korol/multisig-money-tree/public)
+
 # multisig-money-tree
 Bitcoin BIP-45 implementation on Ruby
 

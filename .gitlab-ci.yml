@@ -1,0 +1,60 @@
+stages:
+  - test
+  - development
+
+before_script:
+  - ruby -v
+
+test_demo:
+  stage: test
+  environment:
+    name: test
+  variables:
+    RAILS_ENV: test
+    GIT_STRATEGY: fetch
+  when: always
+  cache:
+    paths:
+      - .bundle/
+      - vendor/bundle/
+  script:
+    - echo "Updating the project"
+    - bundle install --with=development test --path vendor/bundle
+    - echo "Running the tests"
+    - bundle exec rspec
+    - echo "Testing completed"
+
+docs:
+  stage: development
+  environment:
+    name: development
+  variables:
+    RAILS_ENV: test
+    GIT_STRATEGY: fetch
+  when: always
+  cache:
+    paths:
+      - .bundle/
+      - vendor/bundle/
+  script:
+    - echo "Updating the project"
+    - bundle install --with=development test --path vendor/bundle
+    - echo "Start build docs"
+    - bundle exec rake rdoc
+    - echo "RDoc generated"
+  artifacts:
+    paths:
+      - rdoc/
+
+pages:
+  stage: development
+  dependencies:
+    - docs
+  script:
+    - mv rdoc/ public/
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  only:
+    - development
