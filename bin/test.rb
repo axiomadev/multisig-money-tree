@@ -4,35 +4,12 @@ require 'byebug'
 require 'yaml'
 require 'multisig-money-tree'
 
-# COIN = 'bitcoin'
+#COIN = 'bitcoin'
 COIN = 'thebestcoin'
 NETWORK = "#{COIN}_testnet".to_sym
 NODE = 1
 COSIGNERS_COUNT = 2
-REQUIRED_SINGS = 2
-LABEL = 'rename_to_payment'
-
-# Redefine network options in bitcoin ruby library
-networks = Bitcoin::NETWORKS
-# Define network options for thebestcoin_testnet
-networks[:thebestcoin_testnet] = networks[:bitcoin].merge(
-    address_version: '55',
-    p2sh_version: '57',
-    p2sh_char: 'c',
-    privkey_version: '1a',
-    privkey_compression_flag: '01',
-    extended_privkey_version: "3f23263a",
-    extended_pubkey_version: "3f23253b",
-    compressed_wif_chars: %w(c),
-    uncompressed_wif_chars: %w(B),
-    protocol_version: 70015
-)
-networks[:bitcoin_testnet] = networks[:testnet]
-
-Bitcoin.send(:remove_const, :NETWORKS)
-Bitcoin.const_set(:NETWORKS, networks)
-Bitcoin.network = NETWORK
-
+REQUIRED_SIGNS = 2
 
 # Generate new wallets
 def seed(cosigner_index)
@@ -44,27 +21,32 @@ def seed(cosigner_index)
 end
 
 # Get multisig address by public keys (note: use hex of bip32 public keys)
-def node_multisig wallet, node_id, cosigners_count, required_sings
+def node_multisig wallet, node_id, cosigners_count, required_signs
   keys = []
   cosigners_count.times do |i|
     keys << wallet["cosigner#{i}".to_sym][:nodes][node_id][:public][:pubkey_hex]
   end
   
   opts = {
-    required_sings: required_sings,
-    public_keys: keys
+    required_signs: required_signs,
+    public_keys: keys,
+    network: NETWORK
   }
   node = MultisigMoneyTree::BIP45Node.new(opts)
   {
+    prev_redeem_script: node.redeem_script.hth,
     address: node.to_address,
     redeem_script: node.redeem_script.hth,
-    public_key: node.to_bip45,
-    check_reload_address: MultisigMoneyTree::Master.from_bip45(node.to_bip45).to_address
+    public_key: node.to_bip45(network: NETWORK),
+    check_reload_address: MultisigMoneyTree::Master.from_bip45(node.to_bip45(network: NETWORK)).to_address
   }
 end
 
 def bip45_node(wallet, cosigner_index, key_type = :public, node_id)
   key = wallet["cosigner#{cosigner_index}".to_sym][:master][key_type]
+  
+  # key = "EQS8svTtHMkS7Jmch3wNMXTsKmM3uR4m4UrfHiouWstA4ZGwbGCcnYg4CVPkgfkGystvmjh49V1gekCkRsmnzzT6nDbN3RBwhAMKRr3v2Kh5b2fd"
+  
   master = MultisigMoneyTree::Master.from_bip32(cosigner_index, key)
   node = master.node_for(0, node_id)
   result = {
@@ -74,13 +56,41 @@ def bip45_node(wallet, cosigner_index, key_type = :public, node_id)
   result.merge!({
     privkey: node.to_bip32(:private, network: NETWORK),
     privkey_wif: node.private_key.to_wif(compressed: true, network: NETWORK),
-  }) if master.is_private
+  }) if master.private_key?
   
   result.merge!({
     pubkey_hex: node.public_key.to_hex,
-  }) unless master.is_private
+  }) unless master.private_key?
   
   result
+end
+
+# Add multisig address to hot-wallet
+def add_multisig wallet, node_id
+  node = wallet[:multisig][:nodes][node_id]
+  address = {
+      scriptPubKey: {
+          address: node[:address]
+      },
+      # timestamp: 'now', not working for thebestcoin
+      redeemscript: node[:redeem_script],
+      pubkeys: [
+          wallet[:cosigner0][:nodes][node_id][:public][:pubkey_hex],
+          wallet[:cosigner1][:nodes][node_id][:public][:pubkey_hex]
+      ],
+      # watchonly: true,
+      label: LABEL
+  }
+
+  result_importprivkey = Common::CoinRPC[COIN].importprivkey wallet[:cosigner0][:nodes][node_id][:private][:privkey_wif], LABEL, false
+
+  result_importmulti = Common::CoinRPC[COIN].importmulti [address]
+
+  result_validateaddress = Common::CoinRPC[COIN].validateaddress wallet[:multisig][:nodes][node_id][:address]
+
+  puts "RPC importprivkey: #{result_importprivkey}"
+  puts "RPC importmulti: #{result_importmulti}"
+  puts "RPC validateaddress: #{result_validateaddress}"
 end
 
 def init_cosigner_wallet(wallet, cosigner_index, node_index)
@@ -95,21 +105,22 @@ def init_cosigner_wallet(wallet, cosigner_index, node_index)
   } if wallet[key][:nodes][node_index].nil?
 end
 
-def init_multisig_address(wallet, node_index, cosigners_count, required_sings)
+def init_multisig_address(wallet, node_index, cosigners_count, required_signs)
   wallet[:multisig] = {} if wallet[:multisig].nil?
   wallet[:multisig][:nodes] = {} if wallet[:multisig][:nodes].nil?
 
-  wallet[:multisig][:nodes][node_index] = node_multisig(wallet, node_index, cosigners_count, required_sings) if wallet[:multisig][:nodes][node_index].nil?
+  wallet[:multisig][:nodes][node_index] = node_multisig(wallet, node_index, cosigners_count, required_signs) if wallet[:multisig][:nodes][node_index].nil?
 end
 
 # Load wallet data
 wallet_file = "test-gem-wallet-#{COIN}.yml"
+wallet = {}
 
 # generate wallet data
 COSIGNERS_COUNT.times do |cosigner_index|
   init_cosigner_wallet(wallet, cosigner_index, NODE)
 end
 
-init_multisig_address(wallet, NODE, COSIGNERS_COUNT, REQUIRED_SINGS)
+init_multisig_address(wallet, NODE, COSIGNERS_COUNT, REQUIRED_SIGNS)
 # Save wallet data
 File.write(wallet_file, YAML.dump(wallet))
