@@ -16,6 +16,8 @@ module MultisigMoneyTree
       # ==== Result
       # Returned instace of MultisigMoneyTree::Node class for path +m/45+
       def seed(cosigner_index, network: :bitcoin)
+        raise Error::ImportError, 'Invalid cosigner index' if !cosigner_index.kind_of?(Integer) || cosigner_index < 0
+        
         MultisigMoneyTree.network = network
         
         @master = MoneyTree::Master.new network: MultisigMoneyTree.network
@@ -34,6 +36,8 @@ module MultisigMoneyTree
       # ==== Result
       # Returned instace of MultisigMoneyTree::Master class
       def from_bip32(cosigner_index, cosigner_master_key)    
+        raise Error::ImportError, 'Invalid cosigner index' if !cosigner_index.kind_of?(Integer) || cosigner_index < 0
+        
         begin
           @master = MoneyTree::Node.from_bip32(cosigner_master_key)
         rescue MoneyTree::Node::ImportError => e

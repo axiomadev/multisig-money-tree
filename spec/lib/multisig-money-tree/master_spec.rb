@@ -6,6 +6,23 @@ describe MultisigMoneyTree::Master do
   subject(:public_master) { MultisigMoneyTree::Master.from_bip32(1, keys[:master][:valid][:public]) }
   subject(:bip45node) { MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public]) }
   
+  describe '#seed' do
+    it 'check cosigner index' do
+      expect(MultisigMoneyTree::Master.seed(1)).to be_a(MultisigMoneyTree::Node)
+      expect(MultisigMoneyTree::Master.seed(1).cosigner_index).to eq(1)
+    end
+    
+    it 'check invalid cosigner index' do
+      expect {
+        MultisigMoneyTree::Master.seed(-1)
+      }.to raise_error((MultisigMoneyTree::Error::ImportError))
+      
+      expect {
+        MultisigMoneyTree::Master.seed(:first)
+      }.to raise_error((MultisigMoneyTree::Error::ImportError))
+    end
+  end
+  
   describe '#from_bip32' do
     it 'check valid key' do
       expect(MultisigMoneyTree::Master.from_bip32(1, keys[:master][:valid][:public])).to be_a(MultisigMoneyTree::Master)
@@ -20,6 +37,16 @@ describe MultisigMoneyTree::Master do
     it 'check invalid version in key' do
       expect {
         MultisigMoneyTree::Master.from_bip32(1, keys[:master][:invalid][:version_09])
+      }.to raise_error((MultisigMoneyTree::Error::ImportError))
+    end
+    
+    it 'check invalid cosigner index' do
+      expect {
+        MultisigMoneyTree::Master.from_bip32(-1, keys[:master][:valid][:public])
+      }.to raise_error((MultisigMoneyTree::Error::ImportError))
+      
+      expect {
+        MultisigMoneyTree::Master.from_bip32(:first, keys[:master][:valid][:public])
       }.to raise_error((MultisigMoneyTree::Error::ImportError))
     end
   end
