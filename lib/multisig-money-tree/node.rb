@@ -143,14 +143,14 @@ module MultisigMoneyTree
           raise Error::KeyFormatNotFound, "Undefined key format for #{raw_key}"
         end
       end
+      
+      # Convert keys to compressed_hex format for bitcoin-ruby
+      @public_keys_hex = @public_keys.map { |key| key.to_hex }
     end
     
     def check_bip45_opts
       # Set current network to ruby-bitcoin gem
       MultisigMoneyTree.network = network
-      
-      # Convert keys to compressed_hex format for bitcoin-ruby
-      @public_keys_hex = @public_keys.map { |key| key.to_hex }
       
       # https://github.com/bitcoin/bips/blob/master/bip-0045.mediawiki#cosigner-index
       # Quote: The indices can be determined independently by lexicographically sorting the purpose public keys of each cosigner

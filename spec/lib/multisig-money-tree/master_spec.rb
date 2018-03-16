@@ -15,11 +15,11 @@ describe MultisigMoneyTree::Master do
     it 'check invalid cosigner index' do
       expect {
         MultisigMoneyTree::Master.seed(-1)
-      }.to raise_error((MultisigMoneyTree::Error::ImportError))
+      }.to raise_error((MultisigMoneyTree::Error::SeedParamsError))
       
       expect {
         MultisigMoneyTree::Master.seed(:first)
-      }.to raise_error((MultisigMoneyTree::Error::ImportError))
+      }.to raise_error((MultisigMoneyTree::Error::SeedParamsError))
     end
   end
   

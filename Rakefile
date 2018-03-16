@@ -6,7 +6,7 @@ RSpec::Core::RakeTask.new(:spec)
 
 task :default => :spec
 
-desc 'Generate documentation for Devise.'
+desc 'Generate documentation for Multisig Money Tree.'
 Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = 'Multisig Money Tree'

@@ -16,7 +16,7 @@ module MultisigMoneyTree
       # ==== Result
       # Returned instace of MultisigMoneyTree::Node class for path +m/45+
       def seed(cosigner_index, network: :bitcoin)
-        raise Error::ImportError, 'Invalid cosigner index' if !cosigner_index.kind_of?(Integer) || cosigner_index < 0
+        raise Error::SeedParamsError, 'Invalid cosigner index' if !cosigner_index.kind_of?(Integer) || cosigner_index < 0
         
         MultisigMoneyTree.network = network
         
