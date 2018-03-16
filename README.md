@@ -1,6 +1,10 @@
 # multisig-money-tree
 Bitcoin BIP-45 implementation on Ruby
 
+## Example for work with MultisigMoneyTree
+```ruby
+  ruby bin/demo.rb
+```
 
 ## For generate RDoc run
 ```ruby
