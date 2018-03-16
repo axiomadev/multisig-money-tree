@@ -1,3 +1,15 @@
+# ==============================================
+# Multisig Money Tree work demonstration script
+# ==============================================
+#
+# ==== Scenario:
+# * Generate master node for all cosigners (COSIGNERS_COUNT) by MultisigMoneyTree::Master.seed method
+# * Generate first(index - 0) bip45 (public/private) nodes for all cosigners by MultisigMoneyTree::Master.node_for
+# * Pack public keys (from public cosigner node) all cosigners to Array in hex format
+# * Generate net BIP45 multisig node by method MultisigMoneyTree::BIP45Node.new transferring there cosigner public keys and REQUIRED_SIGNS
+# * Get address (node.to_address), redeem_script (node.redeem_script), public bip45 key (node.to_bip45) from BIP45 Node
+# * Save all nodes with keys, addresses to yml file
+
 require 'rubygems'
 require 'bundler/setup'
 require 'byebug'
@@ -139,6 +151,11 @@ end
 
 # Init mulstisig address for cosigners
 init_multisig_address(wallet, NODE, COSIGNERS_COUNT, REQUIRED_SIGNS)
+
+puts "Multisig address was successfully generated:"
+puts "\tAddress: #{wallet[:multisig][:nodes][NODE][:address]}"
+puts "\tRedeem Script: #{wallet[:multisig][:nodes][NODE][:redeem_script]}"
+puts "\tPublic Key: #{wallet[:multisig][:nodes][NODE][:public_key]}"
 
 # Save wallet data
 File.write(wallet_file, YAML.dump(wallet))
