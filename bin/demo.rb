@@ -6,7 +6,7 @@
 # * Generate master node for all cosigners (COSIGNERS_COUNT) by MultisigMoneyTree::Master.seed method
 # * Generate first(index - 0) bip45 (public/private) nodes for all cosigners by MultisigMoneyTree::Master.node_for
 # * Pack public keys (from public cosigner node) all cosigners to Array in hex format
-# * Generate net BIP45 multisig node by method MultisigMoneyTree::BIP45Node.new transferring there cosigner public keys and REQUIRED_SIGNS
+# * Generate new BIP45 multisig node by method MultisigMoneyTree::BIP45Node.new transferring there cosigner public keys and REQUIRED_SIGNS
 # * Get address (node.to_address), redeem_script (node.redeem_script), public bip45 key (node.to_bip45) from BIP45 Node
 # * Save all nodes with keys, addresses to yml file
 
