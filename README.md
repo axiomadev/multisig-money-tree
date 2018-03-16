@@ -1,6 +1,9 @@
 # multisig-money-tree
 Bitcoin BIP-45 implementation on Ruby
 
+[![Build Status](https://travis-ci.org/rusanter/multisig-money-tree.svg?branch=master)](https://travis-ci.org/rusanter/multisig-money-tree)
+[![Coverage Status](https://coveralls.io/repos/github/rusanter/multisig-money-tree/badge.svg?branch=master)](https://coveralls.io/github/rusanter/multisig-money-tree?branch=master)
+
 ## Example for work with MultisigMoneyTree
 ```ruby
   ruby bin/demo.rb
