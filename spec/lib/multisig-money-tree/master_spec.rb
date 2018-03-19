@@ -4,7 +4,7 @@ describe MultisigMoneyTree::Master do
   subject(:keys) { json_fixture('keys') }
   subject(:private_master) { MultisigMoneyTree::Master.from_bip32(1, keys[:master][:valid][:private]) }
   subject(:public_master) { MultisigMoneyTree::Master.from_bip32(1, keys[:master][:valid][:public]) }
-  subject(:bip45node) { MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public]) }
+  subject(:bip45node) { MultisigMoneyTree::Master.from_bip45(1, keys[:bip45][:valid][:public]) }
   
   describe '#seed' do
     it 'check cosigner index' do
@@ -25,7 +25,7 @@ describe MultisigMoneyTree::Master do
   
   describe '#from_bip32' do
     it 'check valid key' do
-      expect(MultisigMoneyTree::Master.from_bip32(1, keys[:master][:valid][:public])).to be_a(MultisigMoneyTree::Master)
+      expect(MultisigMoneyTree::Master.from_bip32(1, keys[:master][:valid][:public])).to be_a(MultisigMoneyTree::Node)
     end
     
     it 'check invalid checksum' do
@@ -75,18 +75,18 @@ describe MultisigMoneyTree::Master do
   
   describe '#from_bip45' do
     it 'check valid bip45 pubkey' do
-      expect(MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public])).to be_a(MultisigMoneyTree::BIP45Node)
+      expect(MultisigMoneyTree::Master.from_bip45(1, keys[:bip45][:valid][:public])).to be_a(MultisigMoneyTree::BIP45Node)
     end
     
     it 'check undefined network in bip45 pubkey' do
       expect { 
-        MultisigMoneyTree::Master.from_bip45(keys[:bip45][:invalid][:rspec_network])
+        MultisigMoneyTree::Master.from_bip45(1, keys[:bip45][:invalid][:rspec_network])
       }.to raise_error((MultisigMoneyTree::Error::NetworkNotFound))
     end
     
     it 'check m-of-n error in bip45 pubkey' do
       expect { 
-        MultisigMoneyTree::Master.from_bip45(keys[:bip45][:invalid][:m_of_n])
+        MultisigMoneyTree::Master.from_bip45(1, keys[:bip45][:invalid][:m_of_n])
       }.to raise_error((MultisigMoneyTree::Error::InvalidParams))
     end
     

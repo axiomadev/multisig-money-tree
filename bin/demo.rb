@@ -47,9 +47,9 @@ end
 # Returned hash with address, redeem_script, public (bip45) key
 def node_multisig wallet, node_id, cosigners_count, required_signs
   # Get all cosigners public keys in hex format
-  keys = []
+  keys = {}
   cosigners_count.times do |i|
-    keys << wallet["cosigner#{i}".to_sym][:nodes][node_id][:public][:pubkey_hex]
+    keys[i] = wallet["cosigner#{i}".to_sym][:nodes][node_id][:public][:pubkey_hex]
   end
   
   opts = {
