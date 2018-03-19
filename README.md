@@ -56,8 +56,11 @@ In the same way, we initialize the node for the cosigner # 2
 ### Create multisig node
 
 ```ruby
-# Pack public hex keys cosigners to array
-keys = [cs_1_public_node[:pubkey_hex], cs_1_public_node[:pubkey_hex]]
+# Pack public hex keys cosigners to hash with cosigner index
+keys = { 
+  0 => cs_1_public_node[:pubkey_hex], 
+  1 => cs_1_public_node[:pubkey_hex]
+}
 
 # Init BIP45 (multisig) node
 multisig_node = MultisigMoneyTree::BIP45Node.new({

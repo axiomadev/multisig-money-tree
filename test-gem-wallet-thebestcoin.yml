@@ -1,0 +1,37 @@
+---
+:cosigner0:
+  :nodes:
+    1:
+      :public:
+        :pubkey: EQQ8FQnAM16KN7tmLL2ejh9xQMswTRySGAAF4fqc9Uov9fJwuqaG6hz6z7YSf2M8CQpdg6mhbHRhfv5K6cF8HrYBXdN4zS15ef5gLPwXEc58G113
+        :address: bEE1CNoinBVQ6y5NFniKxgcSM7J2EMNsEq
+        :pubkey_hex: 02e0f5c4793fdd897c6d32b9c3506e348385497e078c0054fd7f4ed090f450ec43
+      :private:
+        :pubkey: EQQ8FQnAM16KN7tmLL2ejh9xQMswTRySGAAF4fqc9Uov9fJwuqaG6hz6z7YSf2M8CQpdg6mhbHRhfv5K6cF8HrYBXdN4zS15ef5gLPwXEc58G113
+        :address: bEE1CNoinBVQ6y5NFniKxgcSM7J2EMNsEq
+        :privkey: EQQ8svc34dwMfGTBciRtLH1K4LxsFoZrW33CAnPsFANDQCtiFg71k3e6JSisowiGPp72rssUbThCJC3qVkZUukA6BUU6wwhD2SWFtuCeDKUT2Z8i
+        :privkey_wif: 4rjo1EN31qjCi9qA2Ho56KCTViRdbjsQXRTjaQV4ebJTPUjfLa2Y
+  :master:
+    :private: EQQ8svTxar4usDUdEwzsEEPM4CZapADZ7LxLz3k7viCascn9TwNkdaDypqfoNdegeREWyd3fPxm7wfJHwSxTzVvMDSUTzNFFNtQKDbKLbBt3UHJE
+    :public: EQQ8FQe5sDDsa4vCxZbddeXzQDUf1nd8sU5PswBrq2eHd5CP86qzzEZzWWVNDiJarKk96eU8nWNwQJhhp3KD84YTVtjrJLxtF76QRu3G7hQ3ooCE
+:cosigner1:
+  :nodes:
+    1:
+      :public:
+        :pubkey: EQQ8FQmGoGDFc6bBkeuPzsMEfpRZT5UoywBSTUxvg4GaCbkbMyr6vjnsEYCifgLRsGCPELbiv2CCNmmCUgmwduhvtgKuRKVi2JmWCNPcD3RnUtSx
+        :address: bQ3CFbwcyjaQT3q5Da3W6g4hFWcY6fYwM5
+        :pubkey_hex: 02bcbcbc133987401562cfed55104e2d9b8a758339d3cf56f87880d79590835b3c
+      :private:
+        :pubkey: EQQ8FQmGoGDFc6bBkeuPzsMEfpRZT5UoywBSTUxvg4GaCbkbMyr6vjnsEYCifgLRsGCPELbiv2CCNmmCUgmwduhvtgKuRKVi2JmWCNPcD3RnUtSx
+        :address: bQ3CFbwcyjaQT3q5Da3W6g4hFWcY6fYwM5
+        :privkey: EQQ8svb9Wu4HuF9c33JdbTCbKoWVFT5EDp4PZbXBmjpsT9LMhpNra5SrYsP9pbjF1PwZ8Nb1hLyLm3ArU8DDzRzxXq3Jwu5dKCVaSqALkktsRyf6
+        :privkey_wif: 4xuGfUEsKqXswS4gXBJQxtjRYsNY2eLs3LzSFtmqe2aUATRnLN4x
+  :master:
+    :private: EQQ8svUCBXzMCwA5RwiwrHdVryRzxoKgWnZ5vwAV9um6FrZnefBUFJyW36SFh2eH8H4iFu9B7EvtsqmfPMyzDm7aJu3q5RFQAr7d5B8TDFnh5SEB
+    :public: EQQ8FQeKTu9Junbf9ZKiFhn9CzM5ARjGGug8ppcE4ECo1Jz2JpeibyKWimFpY7FNo6DG5rAecg9tzqCRb7YqoVyiUs7zcfq6wm8Aid5srgoADYvv
+:multisig:
+  :nodes:
+    1:
+      :address: cMQVPYK3BEDoWVoUvWyAkDwi2XwSVMaByM
+      :redeem_script: 522102bcbcbc133987401562cfed55104e2d9b8a758339d3cf56f87880d79590835b3c2102e0f5c4793fdd897c6d32b9c3506e348385497e078c0054fd7f4ed090f450ec4352ae
+      :public_key: 6FH6bFAVfMs75yFQttCzPs513w166JZ4LmPBG99H1uv4Xym4hyvLmBnGTrzBmvZrtWg1dVydNPMyVS2q4CBn4X4NWsVPzcySKSeZeHuMbncgGThYVYmmHxcbugSvm94FbmyQ1yDg7fT91VUVEC4y2MRPi9cwXTbyUgTu7Wptwpn1eSxYqf81Bq2h4aQqB5aA4eKZQ2y7yi2FZPLBnzKjvsJwxNESqMg
