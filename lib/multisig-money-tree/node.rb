@@ -216,7 +216,7 @@ module MultisigMoneyTree
       # https://github.com/bitcoin/bips/blob/master/bip-0045.mediawiki#address-gap-limit
       # Quote: Address gap limit is currently set to 20. 
       #        Wallet software should warn when user is trying to exceed the gap limit on an external chain by generating a new address. 
-      raise Error::InvalidParams, "Address gap limit" unless [@required_signs, @public_keys_hex.size].all?{|i| (0..MultisigMoneyTree::MAX_COSIGNER).include?(i) }
+      raise Error::InvalidParams, "Address gap limit" unless [@required_signs, @public_keys_hex.size].all?{|i| (0..MAX_COSIGNER).include?(i) }
       raise Error::InvalidParams, "Invalid m-of-n number" if @public_keys_hex.size < @required_signs
     end
   end

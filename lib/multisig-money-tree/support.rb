@@ -21,7 +21,7 @@ module MultisigMoneyTree
     # [Result]
     # Returned `true` when index >= 0 and < MAX_COSIGNER
     def valid_cosigner_index?(index)
-      !index.nil? && index.kind_of?(Integer) && index >= 0 && index < MultisigMoneyTree::MAX_COSIGNER
+      !index.nil? && index.kind_of?(Integer) && index >= 0 && index < MAX_COSIGNER
     end
   end
 end
