@@ -53,7 +53,6 @@ def node_multisig wallet, node_id, cosigners_count, required_signs
   end
   
   opts = {
-    cosigner_index: 0,
     required_signs: required_signs,
     public_keys: keys,
     network: NETWORK

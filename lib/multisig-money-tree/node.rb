@@ -21,7 +21,7 @@ module MultisigMoneyTree
     # ==== Result
     # Returned `true` when master initialized with private key
     def private_key?
-      !@node.private_key.nil?
+      !node.private_key.nil?
     end
     
     # Get a node defined by the BIP45 standard by change and address index 
@@ -36,17 +36,26 @@ module MultisigMoneyTree
     # Return node for deposit 1-th address (m/45/1/1/1 node)
     def node_for(change, index)
       private_flag = private_key? ? 'm' : 'M'
-      node = @node.node_for_path "#{private_flag}/45/#{@cosigner_index}/#{change}/#{index}"
+      node_path = node.node_for_path("#{private_flag}/45/#{@cosigner_index}/#{change}/#{index}")
       Node.new({
-        node: node,
+        node: node_path,
         change: change,
         cosigner_index: cosigner_index,
         index: index
       })
     end
     
+    # Get node
+    #
+    # ==== Result
+    # Returned instace of MultisigMoneyTree::Node class
+    def node
+      @node
+    end
+    
+    # method-bridge for working with MoneyTree::Node
     def method_missing(m, *args, &block)
-      @node.send(m, *args, &block)
+      node.send(m, *args, &block)
     end
   end
   
@@ -84,14 +93,31 @@ module MultisigMoneyTree
       check_bip45_opts
     end
     
+    # Set new cosigner node
+    #
+    # ==== Arguments
+    # * +index+ Integer cosigner index
+    def cosigner_index=(index)
+      raise Error::InvalidCosignerIndex, 'Invalid cosigner index' if !index.kind_of?(Integer) || index < 0
+        
+      @cosigner_index = index
+    end
+    
+    # Get cosigner node by index
+    #
+    # ==== Result
+    # Returned instace of MultisigMoneyTree::Node class for cosigner public node
+    def node
+      raise Error::InvalidCosignerIndex, 'Cosigner index is not set' if @cosigner_index.nil?
+      
+      @cosigners_nodes[@cosigner_index]
+    end
+    
     # Load public cosigner node for get cosigners public keys in hex format
     def load_cosigners_nodes
       @cosigners_nodes = @public_keys.map do |index, key|
         [index.to_i, MultisigMoneyTree::Master.from_bip32(index.to_i, key)]
       end.to_h
-      
-      # set current cosigner node for method #node_for
-      @node = @cosigners_nodes[@cosigner_index]
     end
     
     # Generate multisig address

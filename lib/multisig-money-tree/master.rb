@@ -12,7 +12,7 @@ module MultisigMoneyTree
       # ==== Result
       # Returned instace of MultisigMoneyTree::Node class for path +m/45+
       def seed(cosigner_index, network: :bitcoin)
-        raise Error::SeedParamsError, 'Invalid cosigner index' if !cosigner_index.kind_of?(Integer) || cosigner_index < 0
+        raise Error::InvalidCosignerIndex, 'Invalid cosigner index' if !cosigner_index.kind_of?(Integer) || cosigner_index < 0
         
         MultisigMoneyTree.network = network
         
@@ -31,9 +31,9 @@ module MultisigMoneyTree
       # * +cosigner_master+ String cosigner private/public key
       # ==== Result
       # Returned instace of MultisigMoneyTree::Master class
-      def from_bip32(cosigner_index, cosigner_master_key)    
-        raise Error::ImportError, 'Invalid cosigner index' if !cosigner_index.kind_of?(Integer) || cosigner_index < 0
-        
+      def from_bip32(cosigner_index, cosigner_master_key)   
+        raise Error::InvalidCosignerIndex, 'Invalid cosigner index' if !cosigner_index.kind_of?(Integer) || cosigner_index < 0
+         
         begin
           @master = MoneyTree::Node.from_bip32(cosigner_master_key)
         rescue MoneyTree::Node::ImportError => e
@@ -54,13 +54,10 @@ module MultisigMoneyTree
       # Create BIP45 Node from BIP45 public key
       #
       # ==== Arguments
-      # * +cosigner_index+ Integer cosigner index
       # * +public_key+ String BIP45 public key
       # ==== Result
       # Returned instace of MultisigMoneyTree::BIP45Node class
-      def from_bip45(cosigner_index, public_key)
-        raise Error::ImportError, 'Invalid cosigner index' if !cosigner_index.kind_of?(Integer) || cosigner_index < 0
-        
+      def from_bip45(public_key)
         hex = from_serialized_base58(public_key)
         network, count, *public_keys = [hex].pack("H*").split(";")
         
@@ -68,7 +65,6 @@ module MultisigMoneyTree
         public_keys.map! { |key| key.split(':') }.to_h
 
         BIP45Node.new({
-          cosigner_index: cosigner_index,
           network: network.to_sym,
           required_signs: count.to_i,
           public_keys: public_keys

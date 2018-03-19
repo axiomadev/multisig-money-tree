@@ -26,7 +26,7 @@ end
 
 describe MultisigMoneyTree::BIP45Node do
   subject(:keys) { json_fixture('keys') }
-  subject(:node) { MultisigMoneyTree::Master.from_bip45(0, keys[:bip45][:valid][:public]) }
+  subject(:node) { MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public]) }
   
   describe '#parse_public_keys' do
     it 'check correct parse and sort keys' do
@@ -36,43 +36,72 @@ describe MultisigMoneyTree::BIP45Node do
     
     it 'check parse pubkey with invalid format keys' do
       expect {
-        MultisigMoneyTree::Master.from_bip45(1, keys[:bip45][:invalid][:invalid_format_base58])
+        MultisigMoneyTree::Master.from_bip45(keys[:bip45][:invalid][:invalid_format_base58])
       }.to raise_error(MultisigMoneyTree::Error::ImportError)
+    end
+  end
+  
+  describe '#cosigner_index=' do
+    subject(:node) { MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public]) }
+    
+    it 'check invalid cosigner index' do
+      expect {
+        node.cosigner_index = -1
+      }.to raise_error((MultisigMoneyTree::Error::InvalidCosignerIndex))
+      
+      expect {
+        node.cosigner_index = :first
+      }.to raise_error((MultisigMoneyTree::Error::InvalidCosignerIndex))
+    end
+  end
+  
+  describe '#node' do
+    it 'check error when cosigner index not set' do
+      expect {
+        MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public]).node
+      }.to raise_error(MultisigMoneyTree::Error::InvalidCosignerIndex)
+    end
+    
+    it 'check error when cosigner index not set' do
+      bip45 = MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public])
+      bip45.cosigner_index = 1
+  
+      expect(bip45.node).to be_a(MultisigMoneyTree::Node)
     end
   end
   
   describe '#redeem_script' do
     it 'check loaded network from bip45 pubkey' do
-      bip45node = MultisigMoneyTree::Master.from_bip45(0, keys[:bip45][:valid][:public])
+      bip45node = MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public])
       expect(bip45node.redeem_script.hth).to eql(keys[:bip45][:valid][:redeem_script])
     end
     
     it 'check set network by method' do
-      bip45node = MultisigMoneyTree::Master.from_bip45(0, keys[:bip45][:valid][:public])
+      bip45node = MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public])
       bip45node.network = :bitcoin
       expect(bip45node.redeem_script.hth).to eql('522102756ae892ade64b6ae84294a6e7a8c58afeb37a1687fa56bac5793cd170ae50442102f02ea3debd18419d6612643f31dbcc425d906c81817047071152cb5a69d6fffa52ae')
     end
     
     it 'check set network by attribute' do
-      bip45node = MultisigMoneyTree::Master.from_bip45(0, keys[:bip45][:valid][:public])
+      bip45node = MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public])
       expect(bip45node.redeem_script(network: :thebestcoin).hth).to eql('522102756ae892ade64b6ae84294a6e7a8c58afeb37a1687fa56bac5793cd170ae50442102f02ea3debd18419d6612643f31dbcc425d906c81817047071152cb5a69d6fffa52ae')
     end
   end
   
   describe '#to_address' do
     it 'check loaded network from bip45 pubkey' do
-      bip45node = MultisigMoneyTree::Master.from_bip45(0, keys[:bip45][:valid][:public])
+      bip45node = MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public])
       expect(bip45node.to_address).to eql(keys[:bip45][:valid][:address])
     end
     
     it 'check set network by method' do
-      bip45node = MultisigMoneyTree::Master.from_bip45(0, keys[:bip45][:valid][:public])
+      bip45node = MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public])
       bip45node.network = :bitcoin
       expect(bip45node.to_address).to eql('3LM3NxeSbP1CCggPv9jJsDTL19ZEsTcJ8X')
     end
     
     it 'check set network by attribute' do
-      bip45node = MultisigMoneyTree::Master.from_bip45(0, keys[:bip45][:valid][:public])
+      bip45node = MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public])
       expect(bip45node.to_address(network: :thebestcoin)).to eql('8ZjtBNXBpj2aqKVXEc4TAqzZBhuW76ZCzB')
     end
   end
@@ -83,13 +112,13 @@ describe MultisigMoneyTree::BIP45Node do
     end
     
     it 'check set network by method' do
-      bip45node = MultisigMoneyTree::Master.from_bip45(0, keys[:bip45][:valid][:public])
+      bip45node = MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public])
       bip45node.network = :bitcoin
       expect(bip45node.to_bip45).to eq(keys[:bip45][:valid][:public_bitcoin])
     end
     
     it 'check set network by attribute' do
-      bip45node = MultisigMoneyTree::Master.from_bip45(0, keys[:bip45][:valid][:public])
+      bip45node = MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public])
       expect(bip45node.to_bip45(network: :thebestcoin_testnet)).to eql(keys[:bip45][:valid][:public_tbc_testnet])
     end
   end
