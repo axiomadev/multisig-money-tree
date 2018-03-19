@@ -81,4 +81,4 @@ multisig = {
 }
 ```
 
-With the help of a public_key, we can in the future restore the multisig node by using the method MultisigMoneyTree::Master.from_bip45(pubkey)
+With the help of a public_key, we can in the future restore the multisig node by using the method MultisigMoneyTree::Master.from_bip45(cosigner_index, pubkey)
