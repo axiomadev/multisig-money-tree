@@ -63,7 +63,6 @@ keys = {
 
 # Init BIP45 (multisig) node
 multisig_node = MultisigMoneyTree::BIP45Node.new({
-  cosigner_index: 0,
   required_signs: REQUIRED_SIGNS,
   public_keys: keys,
   network: NETWORK
@@ -81,4 +80,4 @@ multisig = {
 }
 ```
 
-With the help of a public_key, we can in the future restore the multisig node by using the method MultisigMoneyTree::Master.from_bip45(cosigner_index, pubkey)
+With the help of a public_key, we can in the future restore the multisig node by using the method MultisigMoneyTree::Master.from_bip45(pubkey)
