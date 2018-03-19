@@ -71,11 +71,5 @@ module MultisigMoneyTree
         })
       end
     end
-    
-    # Create instance of MultisigMoneyTree::Master class.
-    # Please use MultisigMoneyTree::Master.from_bip32 method to create instance
-    def initialize(opts = {})
-      opts.each { |k, v| instance_variable_set "@#{k}", v }
-    end
   end
 end
