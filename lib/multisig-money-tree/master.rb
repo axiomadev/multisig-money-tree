@@ -64,6 +64,7 @@ module MultisigMoneyTree
         hex = from_serialized_base58(public_key)
         network, count, *public_keys = [hex].pack("H*").split(";")
         
+        # parse cosigner keys with index
         public_keys.map! { |key| key.split(':') }.to_h
 
         BIP45Node.new({

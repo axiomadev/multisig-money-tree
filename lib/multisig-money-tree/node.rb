@@ -84,12 +84,13 @@ module MultisigMoneyTree
       check_bip45_opts
     end
     
-    # Load public cosigner node
+    # Load public cosigner node for get cosigners public keys in hex format
     def load_cosigners_nodes
       @cosigners_nodes = @public_keys.map do |index, key|
         [index.to_i, MultisigMoneyTree::Master.from_bip32(index.to_i, key)]
       end.to_h
       
+      # set current cosigner node for method #node_for
       @node = @cosigners_nodes[@cosigner_index]
     end
     
@@ -172,7 +173,7 @@ module MultisigMoneyTree
       opts.join(';').unpack('H*').first
     end
     
-    # Parse string raw key to PublicKey object
+    # Generate cosigner public keys in hex format by public nodes
     def parse_public_keys
       # Convert keys to compressed_hex format for bitcoin-ruby
       @public_keys_hex = @cosigners_nodes.map { |index, key| key.public_key.to_hex }
