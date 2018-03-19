@@ -75,7 +75,7 @@ describe MultisigMoneyTree::Master do
   
   describe '#from_bip45' do
     it 'check valid bip45 pubkey' do
-      expect(MultisigMoneyTree::Master.from_bip45(1, keys[:bip45][:valid][:public])).to be_a(MultisigMoneyTree::BIP45Node)
+      expect(MultisigMoneyTree::Master.from_bip45(0, keys[:bip45][:valid][:public])).to be_a(MultisigMoneyTree::BIP45Node)
     end
     
     it 'check undefined network in bip45 pubkey' do

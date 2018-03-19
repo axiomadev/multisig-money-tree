@@ -49,7 +49,7 @@ def node_multisig wallet, node_id, cosigners_count, required_signs
   # Get all cosigners public keys in hex format
   keys = {}
   cosigners_count.times do |i|
-    keys[i] = wallet["cosigner#{i}".to_sym][:nodes][node_id][:public][:pubkey_hex]
+    keys[i] = wallet["cosigner#{i}".to_sym][:nodes][node_id][:public][:pubkey]
   end
   
   opts = {
@@ -96,12 +96,7 @@ def bip45_node(wallet, cosigner_index, key_type = :public, node_id)
     privkey: node.to_bip32(:private, network: NETWORK),
     privkey_wif: node.private_key.to_wif(compressed: true, network: NETWORK),
   }) if master.private_key?
-  
-  result.merge!({
-    pubkey_hex: node.public_key.to_hex,
-    pubkey_address: node.public_key.to_address(network: NETWORK),
-  }) unless master.private_key?
-  
+
   result
 end
 

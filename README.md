@@ -47,7 +47,6 @@ cs_1_public_master = MultisigMoneyTree::Master.from_bip32(0, cs_1_keys[:public])
 cs_1_deposit_node = cs_1_public_master.node_for(0, 1)
 cs_1_public_node = {
     pubkey: cs_1_deposit_node.to_bip32(:public, network: NETWORK),
-    pubkey_hex: cs_1_deposit_node.public_key.to_hex,
     address: cs_1_deposit_node.to_address(network: NETWORK)
 }
 ```
@@ -56,14 +55,15 @@ In the same way, we initialize the node for the cosigner # 2
 ### Create multisig node
 
 ```ruby
-# Pack public hex keys cosigners to hash with cosigner index
+# Pack public nodes bip32 keys cosigners to hash with cosigner index
 keys = { 
-  0 => cs_1_public_node[:pubkey_hex], 
-  1 => cs_1_public_node[:pubkey_hex]
+  0 => cs_0_public_node[:pubkey], 
+  1 => cs_1_public_node[:pubkey]
 }
 
 # Init BIP45 (multisig) node
 multisig_node = MultisigMoneyTree::BIP45Node.new({
+  cosigner_index: 0,
   required_signs: REQUIRED_SIGNS,
   public_keys: keys,
   network: NETWORK

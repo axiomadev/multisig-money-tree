@@ -51,20 +51,20 @@ module MultisigMoneyTree
   end
   
   class BIP45Node < Node
-    attr_reader :public_keys, :public_keys_hex, :required_signs, :address, :redeem_script, :network
+    attr_reader :public_keys, :public_keys_hex, :required_signs, :address, :redeem_script, :network, :cosigners_nodes
     
     # Create new +BIP45+ Node for create multisig address
     #
     # ==== Arguments
-    # * +public_keys+ Array list of String cosigner public keys (Allowed formats: hex, base64, compressed wif, uncompressed wif)
+    # * +public_keys+ Array list of String cosigner bip32 public keys
     # * +required_signs+ Integer number required signatures for send transaction
     # * +network+ Symbol (optional, default: :bitcoin) network name
     # ==== Result
     # Returned instace of MultisigMoneyTree::BIP45Node class for generate multisig address
     # ==== Example
     #     pubkeys = {
-    #       0 => "02e34a911c1e1d605568bfad35b5f0def282fa31ea9e2361dc1ce8a40a3ae322f6",
-    #       1 => "02015429220c68b7cd6dcd44a7f69f126391d3e6b03e72f89035dd8d7f358f7dca"
+    #       0 => "EQQ8FQmN5rYzWVWKBLB4GiN15wizzQBeTnYJD2axgHcvbPKr3p8rYnWuYTXCjLSBcKrJxSAt6dHmPwjaDpceqEV9FfJK1LpF9S2fpTzDp1HhzXX4",
+    #       1 => "EQQ8FQmN5rYzWVWKBLB4GiN15wizzQBeTnYJD2axgHcvbPKr3p8rYnWuYTXCjLSBcKrJxSAt6dHmPwjaDpceqEV9FfJK1LpF9S2fpTzDp1HhzXX4"
     #     }
     #     multisig_node = MultisigMoneyTree::BIP45Node.new({
     #         public_keys: pubkeys,
@@ -73,24 +73,24 @@ module MultisigMoneyTree
     #     })
     # Return MultisigMoneyTree::BIP45Node object, for work with BIP45 node
     # ==== Example
-    #     address = multisig_node.to_address => cQNL51CFhb2pLY6d9N7tckaiRDpQrbBDkB
-    #     redeem_script = multisig_node.redeem_script => 522102015429220c68b7cd6dcd44a7f69f126391d3e6b03e72f89035dd8d7f358f7dca2102e34a911c1e1d605568bfad35b5f0def282fa31ea9e2361dc1ce8a40a3ae322f652ae
-    #     pubkey = multisig_node.to_bip45 => 6FH6bFAVfMs75yFQttCzPs513w166JZ4LmPBG9MZy9nmReBBDNTPAxPCQCGRk2N9kuRrXV4twin2Y4rwQeuvkQhCSVvWXQ47k1k5A95NjQ544jM5K7J4WtnUcqAtzNRvVWFGXi7pYNn64AtuzXDdBWQzK4hi1s5UKr8hQ61wjuL95AKcpLhVae5eZEp142N4ADVkUgYVgai8NHNhckGVT8G8vFgnnDL
+    #     address = multisig_node.to_address => c95ZV5fJ4x5TNdch38RfFC3BqAkGMP8ERk
+    #     redeem_script = multisig_node.redeem_script => 52210322eb01c4acf17c88cabd4716058e957792e545b3072a4185971f88df11118836210329cb1cfd5dfbc98d5850603067c9e6368bf27dae02c856025ba82d341bf53b0f52ae
+    #     pubkey = multisig_node.to_bip45 => 2DhbqvYUoAPXA3Cp34dGRS8Mdvjauqx3zXf4KyGPnKg1iGGN2Ad57pYWLvH8KHAUMFP5x6qsokpUdxDrX7d6uCnxqFDYXDioaS1QdUzj3N2sr7Wt9ZUC5sxqpDRgNP3rEpvoBBCyPPEd6ESEBdCwJkiedLdW38YVTEaX3uQgmVwhDqq8CQgw6sX6hmtUoCMogfcCbLVmX45SVVztR3Z5HyciwpFLVhdzQZ6LxFRpBHaK6B44CRWYYXyAE7DfgoQiQVLeNpYEQgyvF9cqMVNTJELP2rLZCJsqLwnhusd4vKAcZai4cCbEivhjbzuBbYUHcER6MQpjjx6a7qRbwQHcfXc8t6UMD
     def initialize(opts = {})
       opts.each { |k, v| instance_variable_set "@#{k}", v }
       
+      load_cosigners_nodes
       parse_public_keys
       check_bip45_opts
-      load_cosigner_node
     end
     
     # Load public cosigner node
-    def load_cosigner_node
-      return if @node
-
-      # TODO Exception: Public or private key data does not match version type
-      key = @public_keys[@cosigner_index].to_address(network: network)
-      @node = MultisigMoneyTree::Master.from_bip32(@cosigner_index, key)
+    def load_cosigners_nodes
+      @cosigners_nodes = @public_keys.map do |index, key|
+        [index.to_i, MultisigMoneyTree::Master.from_bip32(index.to_i, key)]
+      end.to_h
+      
+      @node = @cosigners_nodes[@cosigner_index]
     end
     
     # Generate multisig address
@@ -103,7 +103,6 @@ module MultisigMoneyTree
       check_bip45_opts
       
       @address, @redeem_script = Bitcoin.pubkeys_to_p2sh_multisig_address(@required_signs, *@public_keys_hex)
-        
       @address
     end
     
@@ -167,24 +166,16 @@ module MultisigMoneyTree
     # Public keys stored to pubkey in hex format
     def to_serialized_hex
       opts = [network.to_s, @required_signs.to_s]
-      @public_keys.each do |index, key|
-        opts << "#{index}:#{key.to_address(network: network)}"
+      @cosigners_nodes.each do |index, node|
+        opts << "#{index}:#{node.to_bip32(:public, network: network)}"
       end
       opts.join(';').unpack('H*').first
     end
     
     # Parse string raw key to PublicKey object
     def parse_public_keys
-      @public_keys = @public_keys.map do |index, raw_key|
-        begin
-          [index.to_s.to_i, MoneyTree::PublicKey.new(raw_key)]
-        rescue MoneyTree::Key::KeyFormatNotFound
-          raise Error::KeyFormatNotFound, "Undefined key format for #{raw_key}"
-        end
-      end.to_h
-      
       # Convert keys to compressed_hex format for bitcoin-ruby
-      @public_keys_hex = @public_keys.map { |index, key| key.to_hex }
+      @public_keys_hex = @cosigners_nodes.map { |index, key| key.public_key.to_hex }
     end
     
     def check_bip45_opts
