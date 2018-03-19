@@ -146,7 +146,7 @@ module MultisigMoneyTree
     def to_bip45(network: @network)
       @network = network
 
-      # check_bip45_opts
+      check_bip45_opts
 
       to_serialized_base58(to_serialized_hex)
     end
