@@ -15,17 +15,17 @@ describe MultisigMoneyTree::Master do
     it 'check invalid cosigner index' do
       expect {
         MultisigMoneyTree::Master.seed(-1)
-      }.to raise_error((MultisigMoneyTree::Error::SeedParamsError))
+      }.to raise_error((MultisigMoneyTree::Error::InvalidCosignerIndex))
       
       expect {
         MultisigMoneyTree::Master.seed(:first)
-      }.to raise_error((MultisigMoneyTree::Error::SeedParamsError))
+      }.to raise_error((MultisigMoneyTree::Error::InvalidCosignerIndex))
     end
   end
   
   describe '#from_bip32' do
     it 'check valid key' do
-      expect(MultisigMoneyTree::Master.from_bip32(1, keys[:master][:valid][:public])).to be_a(MultisigMoneyTree::Master)
+      expect(MultisigMoneyTree::Master.from_bip32(1, keys[:master][:valid][:public])).to be_a(MultisigMoneyTree::Node)
     end
     
     it 'check invalid checksum' do
@@ -43,11 +43,11 @@ describe MultisigMoneyTree::Master do
     it 'check invalid cosigner index' do
       expect {
         MultisigMoneyTree::Master.from_bip32(-1, keys[:master][:valid][:public])
-      }.to raise_error((MultisigMoneyTree::Error::ImportError))
+      }.to raise_error((MultisigMoneyTree::Error::InvalidCosignerIndex))
       
       expect {
         MultisigMoneyTree::Master.from_bip32(:first, keys[:master][:valid][:public])
-      }.to raise_error((MultisigMoneyTree::Error::ImportError))
+      }.to raise_error((MultisigMoneyTree::Error::InvalidCosignerIndex))
     end
   end
   

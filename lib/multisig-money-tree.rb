@@ -9,5 +9,5 @@ require 'multisig-money-tree/node'
 require 'multisig-money-tree/master'
 
 module MultisigMoneyTree
-  
+  MAX_COSIGNER = 20
 end

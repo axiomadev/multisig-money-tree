@@ -1,5 +1,6 @@
 require 'simplecov'
 require 'multisig-money-tree'
+require 'byebug'
 require 'pry'
 
 SimpleCov.start do

@@ -5,7 +5,7 @@
 # ==== Scenario:
 # * Generate master node for all cosigners (COSIGNERS_COUNT) by MultisigMoneyTree::Master.seed method
 # * Generate first(index - 0) bip45 (public/private) nodes for all cosigners by MultisigMoneyTree::Master.node_for
-# * Pack public keys (from public cosigner node) all cosigners to Array in hex format
+# * Pack public bip32 keys (from public cosigner node) all cosigners to Hash with cosigner indexes
 # * Generate new BIP45 multisig node by method MultisigMoneyTree::BIP45Node.new transferring there cosigner public keys and REQUIRED_SIGNS
 # * Get address (node.to_address), redeem_script (node.redeem_script), public bip45 key (node.to_bip45) from BIP45 Node
 # * Save all nodes with keys, addresses to yml file
@@ -16,7 +16,7 @@ require 'byebug'
 require 'yaml'
 require 'multisig-money-tree'
 
-#COIN = 'bitcoin'
+# COIN = 'bitcoin'
 COIN = 'thebestcoin'
 NETWORK = "#{COIN}_testnet".to_sym
 NODE = 1
@@ -37,7 +37,7 @@ def seed(cosigner_index)
   }
 end
 
-# Get multisig address by public keys (note: Allowed formats: hex, base64, compressed wif, uncompressed wif)
+# Get multisig address by public bip32 keys
 # ==== Arguments
 # * +wallet+ Hash with pub/priv cosigner keys
 # * +node_id+ Integer address index
@@ -46,10 +46,10 @@ end
 # ==== Result
 # Returned hash with address, redeem_script, public (bip45) key
 def node_multisig wallet, node_id, cosigners_count, required_signs
-  # Get all cosigners public keys in hex format
-  keys = []
+  # Get all cosigners public bip32 keys to hash with indexes
+  keys = {}
   cosigners_count.times do |i|
-    keys << wallet["cosigner#{i}".to_sym][:nodes][node_id][:public][:pubkey_hex]
+    keys[i] = wallet["cosigner#{i}".to_sym][:nodes][node_id][:public][:pubkey]
   end
   
   opts = {
@@ -76,7 +76,7 @@ end
 #   For key_type = :private
 #     pubkey, address, privkey, privkey_wif
 #   For key_type = :public 
-#     pubkey, address, pubkey_hex
+#     pubkey, address
 def bip45_node(wallet, cosigner_index, key_type = :public, node_id)
   # Get key from wallet keys storege by index
   key = wallet["cosigner#{cosigner_index}".to_sym][:master][key_type]
@@ -95,11 +95,7 @@ def bip45_node(wallet, cosigner_index, key_type = :public, node_id)
     privkey: node.to_bip32(:private, network: NETWORK),
     privkey_wif: node.private_key.to_wif(compressed: true, network: NETWORK),
   }) if master.private_key?
-  
-  result.merge!({
-    pubkey_hex: node.public_key.to_hex,
-  }) unless master.private_key?
-  
+
   result
 end
 
