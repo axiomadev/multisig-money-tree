@@ -14,5 +14,14 @@ module MultisigMoneyTree
     def compressed_hex_format?(raw_key)
       raw_key.length == 66 && !raw_key[/\H/]
     end
+    
+    # Check valid cosigner index
+    # [Arguments]
+    # * +index+ Integer index
+    # [Result]
+    # Returned `true` when index >= 0 and < MAX_COSIGNER
+    def valid_cosigner_index?(index)
+      !index.nil? && index.kind_of?(Integer) && index >= 0 && index < MultisigMoneyTree::MAX_COSIGNER
+    end
   end
 end

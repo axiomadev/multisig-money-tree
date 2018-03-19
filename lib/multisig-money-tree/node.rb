@@ -98,7 +98,7 @@ module MultisigMoneyTree
     # ==== Arguments
     # * +index+ Integer cosigner index
     def cosigner_index=(index)
-      raise Error::InvalidCosignerIndex, 'Invalid cosigner index' if !index.kind_of?(Integer) || index < 0
+      raise Error::InvalidCosignerIndex, 'Invalid cosigner index' unless valid_cosigner_index?(index)
         
       @cosigner_index = index
     end
@@ -216,7 +216,7 @@ module MultisigMoneyTree
       # https://github.com/bitcoin/bips/blob/master/bip-0045.mediawiki#address-gap-limit
       # Quote: Address gap limit is currently set to 20. 
       #        Wallet software should warn when user is trying to exceed the gap limit on an external chain by generating a new address. 
-      raise Error::InvalidParams, "Address gap limit" unless [@required_signs, @public_keys_hex.size].all?{|i| (0..20).include?(i) }
+      raise Error::InvalidParams, "Address gap limit" unless [@required_signs, @public_keys_hex.size].all?{|i| (0..MultisigMoneyTree::MAX_COSIGNER).include?(i) }
       raise Error::InvalidParams, "Invalid m-of-n number" if @public_keys_hex.size < @required_signs
     end
   end
