@@ -40,6 +40,8 @@ module MultisigMoneyTree
           raise Error::ImportError, e.message
         rescue EncodingError => e
           raise Error::ChecksumError, 'Invalid checksum in key'
+        rescue ArgumentError => e
+          raise Error::ImportError, "#{e.message}\nKey: #{cosigner_master_key}"
         end
 
         Node.new({
@@ -65,6 +67,7 @@ module MultisigMoneyTree
         public_keys.map! { |key| key.split(':') }.to_h
 
         BIP45Node.new({
+          cosigner_index: cosigner_index,
           network: network.to_sym,
           required_signs: count.to_i,
           public_keys: public_keys

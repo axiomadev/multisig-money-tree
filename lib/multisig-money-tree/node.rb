@@ -23,7 +23,7 @@ module MultisigMoneyTree
     def private_key?
       !@node.private_key.nil?
     end
-
+    
     # Get a node defined by the BIP45 standard by change and address index 
     #
     # ==== Arguments
@@ -81,6 +81,16 @@ module MultisigMoneyTree
       
       parse_public_keys
       check_bip45_opts
+      load_cosigner_node
+    end
+    
+    # Load public cosigner node
+    def load_cosigner_node
+      return if @node
+
+      # TODO Exception: Public or private key data does not match version type
+      key = @public_keys[@cosigner_index].to_address(network: network)
+      @node = MultisigMoneyTree::Master.from_bip32(@cosigner_index, key)
     end
     
     # Generate multisig address
@@ -158,7 +168,7 @@ module MultisigMoneyTree
     def to_serialized_hex
       opts = [network.to_s, @required_signs.to_s]
       @public_keys.each do |index, key|
-        opts << "#{index}:#{key.to_hex}"
+        opts << "#{index}:#{key.to_address(network: network)}"
       end
       opts.join(';').unpack('H*').first
     end
@@ -167,7 +177,7 @@ module MultisigMoneyTree
     def parse_public_keys
       @public_keys = @public_keys.map do |index, raw_key|
         begin
-          [index.to_s.to_i, MoneyTree::PublicKey.new(raw_key, network: network)]
+          [index.to_s.to_i, MoneyTree::PublicKey.new(raw_key)]
         rescue MoneyTree::Key::KeyFormatNotFound
           raise Error::KeyFormatNotFound, "Undefined key format for #{raw_key}"
         end

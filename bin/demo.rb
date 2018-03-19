@@ -16,7 +16,7 @@ require 'byebug'
 require 'yaml'
 require 'multisig-money-tree'
 
-#COIN = 'bitcoin'
+# COIN = 'bitcoin'
 COIN = 'thebestcoin'
 NETWORK = "#{COIN}_testnet".to_sym
 NODE = 1
@@ -53,6 +53,7 @@ def node_multisig wallet, node_id, cosigners_count, required_signs
   end
   
   opts = {
+    cosigner_index: 0,
     required_signs: required_signs,
     public_keys: keys,
     network: NETWORK
@@ -98,6 +99,7 @@ def bip45_node(wallet, cosigner_index, key_type = :public, node_id)
   
   result.merge!({
     pubkey_hex: node.public_key.to_hex,
+    pubkey_address: node.public_key.to_address(network: NETWORK),
   }) unless master.private_key?
   
   result
