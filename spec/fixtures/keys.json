@@ -2,7 +2,8 @@
   "master": {
     "valid": {
       "public": "EQQ8FQf6T8Pm1W2fWG5E4vrf8Gkd1DsyAN5WDcoyhW4X8dyniedfXAYBsYem5Rn1Hcd3cfBveLNu5Mx6oW3Bp16h1XbcAiVZRQEsUDATyidwPKBa",
-      "private": "EQQ8svUyAmEoJeb5neUTfWi1nFqYobUPQExTKjNEoBcpPBZZ4VARAWCBBsqCEM97ZBv7EAvxkBcrkLH3XgAogFNoFJXVL8JSJ8XzPrQWV3ZDVd3z"
+      "private": "EQQ8svUyAmEoJeb5neUTfWi1nFqYobUPQExTKjNEoBcpPBZZ4VARAWCBBsqCEM97ZBv7EAvxkBcrkLH3XgAogFNoFJXVL8JSJ8XzPrQWV3ZDVd3z",
+      "bip45": "2DhbqvYUoAPXA3Cp34dGRS8Mdvjauqx3zXf4KyGPnKaW9Zu4MZPoNUCK53gWMqEV21m8thAq5XPC6oFy1mz6payxrnFqnctpnzn2AMzY8JYLycr5gEMsQaVGgXxvUktbMb56GoLSD81haHK8wtsjrjN841hU1VF5EySFqnrPfcn2V88aF9k2jgnuXtE5jpdQr4KoeUHjEjmXC99Bcn7bjuzBRxAv89kDhSFWy2vukYvYKDTkFyqGdRXuB6FjvHwnujYZ3PKFzbEdvNzAYs1fjSuHyXCDrFJrFfbBGn4HRwZm2KFUsn3cgGy4yDyzroyqLz53aNdpbitv15o3iS8T3LnjoNqoh"
     },
     "invalid": {
       "checksum": "EQQ8FQ2g68Pm1W2fWG5E4vrf8Gkd1DsyAN5WDcoyhW4X8dyniedfXAYBsYem5Rn1Hcd3cfBveLNu5Mx6oW3Bp16h1XbcAiVZRQEsUDATyidwPKBa",

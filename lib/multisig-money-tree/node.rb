@@ -113,6 +113,25 @@ module MultisigMoneyTree
       @cosigners_nodes[@cosigner_index]
     end
     
+    # Get net bip45 node for +change+ and +index+
+    # ==== Arguments
+    # * +change+ Integer change flag 0/1
+    # * +number+ Integer address index
+    # ==== Result
+    # Returned instance of MultisigMoneyTree::BIP45Node class
+    def node_for(change, index)
+      # get all deposit nodes for +number+ index node
+      new_public_keys = @cosigners_nodes.map do |cosigner_index, node|
+        [cosigner_index, node.node_for(change, index).to_bip32(:public, network: network)]
+      end.to_h
+
+      BIP45Node.new({
+        network: network.to_sym,
+        required_signs: required_signs,
+        public_keys: new_public_keys
+      })
+    end
+
     # Load public cosigner node for get cosigners public keys in hex format
     def load_cosigners_nodes
       @cosigners_nodes = @public_keys.map do |index, key|
