@@ -23,6 +23,12 @@ NODE = 1
 COSIGNERS_COUNT = 2
 REQUIRED_SIGNS = 2
 
+# Pre-generated bip45 public keys for node M/45
+BIP45KEYS = {
+  thebestcoin_testnet: "2DhbqvYUoAPXA3Cp34dGRS8Mdvjauqx3zXf4KyGPnKaW9Zu4MZPoNUCK53gWMqEV21m8thAq5XPC6oFy1mz6payxrnFqnctpnzn2AMzY8JYLycr5gEMsQaVGgXxvUktbMb56GoLSD81haHK8wtsjrjN841hU1VF5EySFqnrPfcn2V88aF9k2jgnuXtE5jpdQr4KoeUHjEjmXC99Bcn7bjuzBRxAv89kDhSFWy2vukYvYKDTkFyqGdRXuB6FjvHwnujYZ3PKFzbEdvNzAYs1fjSuHyXCDrFJrFfbBGn4HRwZm2KFUsn3cgGy4yDyzroyqLz53aNdpbitv15o3iS8T3LnjoNqoh",
+  bitcoin_testnet: "UCEprTQ5bbeFXFrnkQQJ7wgFNLdnxZCoJXv3ytZ4rN1hwm71NuLRi6nP8cLjxuGMQFHxMHTKZHiohFAyNzZyfPiSCZTDnGzjDAKraZbfE2H46Gfgfi2WzNr6qDSMjzGKxKFStu4scNbDayiU5BB2AUVNCkWfAMSQyasDdQFo67dyKVeYmRrbPgBrBp76HtUpL9bKZg8BpumXuCmy7rgEbT7Cisd3EdNVoSiyWZwzgFDSCBeApZTVXjuPmx1HQPTarA5xxuPzyUmheRAxZXgEQd6jNBApFZVsg1zqTJ657TKnqTPmMperZEvHYGM4daE2ZrRY72n3KVvWp7XhXZrv"
+} 
+
 # Generate new wallets
 # ==== Arguments
 # * +cosigner_index+ Integer cosigner index
@@ -61,7 +67,17 @@ def node_multisig wallet, node_id, cosigners_count, required_signs
   {
     address: node.to_address,
     redeem_script: node.redeem_script.hth,
-    public_key: node.to_bip45(network: NETWORK),
+    public_key: node.to_bip45(network: NETWORK)
+  }
+end
+
+def multisig_node_from_bip45(node_id)
+  master = MultisigMoneyTree::Master.from_bip45(BIP45KEYS[NETWORK])
+  node = master.node_for(0, node_id)
+  {
+    address: node.to_address,
+    redeem_script: node.redeem_script.hth,
+    public_key: node.to_bip45(network: NETWORK)
   }
 end
 
@@ -136,6 +152,10 @@ def init_multisig_address(wallet, node_index, cosigners_count, required_signs)
   wallet[:multisig][:nodes][node_index] = node_multisig(wallet, node_index, cosigners_count, required_signs) if wallet[:multisig][:nodes][node_index].nil?
 end
 
+def init_multisig_address_from_bip45(wallet, node_index)
+  wallet[:multisig][:nodes][node_index] = multisig_node_from_bip45(node_index) if wallet[:multisig][:nodes][node_index].nil?
+end
+
 # File for save wallet hash
 wallet_file = "test-gem-wallet-#{COIN}.yml"
 wallet = {}
@@ -152,6 +172,8 @@ puts "Multisig address was successfully generated:"
 puts "\tAddress: #{wallet[:multisig][:nodes][NODE][:address]}"
 puts "\tRedeem Script: #{wallet[:multisig][:nodes][NODE][:redeem_script]}"
 puts "\tPublic Key: #{wallet[:multisig][:nodes][NODE][:public_key]}"
+
+init_multisig_address_from_bip45(wallet, NODE + 1)
 
 # Save wallet data
 File.write(wallet_file, YAML.dump(wallet))
