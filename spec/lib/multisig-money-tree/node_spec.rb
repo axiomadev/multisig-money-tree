@@ -70,6 +70,19 @@ describe MultisigMoneyTree::BIP45Node do
     end
   end
   
+  describe '#node_for' do
+    it 'check return bip45 node' do
+      bip45 = MultisigMoneyTree::Master.from_bip45(keys[:master][:valid][:bip45])
+      expect(bip45.node_for(0, 1)).to be_a(MultisigMoneyTree::BIP45Node)
+    end
+    
+    it 'check generated node address' do
+      bip45 = MultisigMoneyTree::Master.from_bip45(keys[:master][:valid][:bip45])
+
+      expect(bip45.node_for(0, 2).to_address(network: :thebestcoin_testnet)).to eq("c7jGFUnVKP8hDPjQvVE2AYkwz6gDZcAowm")
+    end
+  end
+  
   describe '#redeem_script' do
     it 'check loaded network from bip45 pubkey' do
       bip45node = MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public])
