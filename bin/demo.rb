@@ -27,7 +27,7 @@ REQUIRED_SIGNS = 2
 BIP45KEYS = {
   thebestcoin_testnet: "2DhbqvYUoAPXA3Cp34dGRS8Mdvjauqx3zXf4KyGPnKaW9Zu4MZPoNUCK53gWMqEV21m8thAq5XPC6oFy1mz6payxrnFqnctpnzn2AMzY8JYLycr5gEMsQaVGgXxvUktbMb56GoLSD81haHK8wtsjrjN841hU1VF5EySFqnrPfcn2V88aF9k2jgnuXtE5jpdQr4KoeUHjEjmXC99Bcn7bjuzBRxAv89kDhSFWy2vukYvYKDTkFyqGdRXuB6FjvHwnujYZ3PKFzbEdvNzAYs1fjSuHyXCDrFJrFfbBGn4HRwZm2KFUsn3cgGy4yDyzroyqLz53aNdpbitv15o3iS8T3LnjoNqoh",
   bitcoin_testnet: "UCEprTQ5bbeFXFrnkQQJ7wgFNLdnxZCoJXv3ytZ4rN1hwm71NuLRi6nP8cLjxuGMQFHxMHTKZHiohFAyNzZyfPiSCZTDnGzjDAKraZbfE2H46Gfgfi2WzNr6qDSMjzGKxKFStu4scNbDayiU5BB2AUVNCkWfAMSQyasDdQFo67dyKVeYmRrbPgBrBp76HtUpL9bKZg8BpumXuCmy7rgEbT7Cisd3EdNVoSiyWZwzgFDSCBeApZTVXjuPmx1HQPTarA5xxuPzyUmheRAxZXgEQd6jNBApFZVsg1zqTJ657TKnqTPmMperZEvHYGM4daE2ZrRY72n3KVvWp7XhXZrv"
-} 
+}
 
 # Generate new wallets
 # ==== Arguments
@@ -57,7 +57,7 @@ def node_multisig wallet, node_id, cosigners_count, required_signs
   cosigners_count.times do |i|
     keys[i] = wallet["cosigner#{i}".to_sym][:nodes][node_id][:public][:pubkey]
   end
-  
+
   opts = {
     required_signs: required_signs,
     public_keys: keys,
@@ -91,22 +91,24 @@ end
 # Returned hash with keys
 #   For key_type = :private
 #     pubkey, address, privkey, privkey_wif
-#   For key_type = :public 
+#   For key_type = :public
 #     pubkey, address
 def bip45_node(wallet, cosigner_index, key_type = :public, node_id)
   # Get key from wallet keys storege by index
   key = wallet["cosigner#{cosigner_index}".to_sym][:master][key_type]
 
-  # Get master node 
+  # Get master node
   master = MultisigMoneyTree::Master.from_bip32(cosigner_index, key)
   # get bip45 node by change flag and index
   node = master.node_for(0, node_id)
-  
+
   # generate address, keys
   result = {
       pubkey: node.to_bip32(:public, network: NETWORK),
       address: node.to_address(network: NETWORK)
   }
+  puts "Network: #{NETWORK}"
+  puts "NETWORKS: #{MoneyTree::NETWORKS.inspect}"
   result.merge!({
     privkey: node.to_bip32(:private, network: NETWORK),
     privkey_wif: node.private_key.to_wif(compressed: true, network: NETWORK),
@@ -126,14 +128,14 @@ def init_cosigner_wallet(wallet, cosigner_index, node_index)
   key = "cosigner#{cosigner_index}".to_sym
   wallet[key] = {} if wallet[key].nil?
   wallet[key][:nodes] = {} if wallet[key][:nodes].nil?
-  
+
   # seed master node
   wallet[key][:master] = seed(cosigner_index) if wallet[key][:master].nil?
 
   # generate new node for +node_index+
-  wallet[key][:nodes][node_index] = { 
-    public: bip45_node(wallet, cosigner_index, :public, node_index), 
-    private: bip45_node(wallet, cosigner_index, :private, node_index) 
+  wallet[key][:nodes][node_index] = {
+    public: bip45_node(wallet, cosigner_index, :public, node_index),
+    private: bip45_node(wallet, cosigner_index, :private, node_index)
   } if wallet[key][:nodes][node_index].nil?
 end
 
