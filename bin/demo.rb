@@ -107,8 +107,6 @@ def bip45_node(wallet, cosigner_index, key_type = :public, node_id)
       pubkey: node.to_bip32(:public, network: NETWORK),
       address: node.to_address(network: NETWORK)
   }
-  puts "Network: #{NETWORK}"
-  puts "NETWORKS: #{MoneyTree::NETWORKS.inspect}"
   result.merge!({
     privkey: node.to_bip32(:private, network: NETWORK),
     privkey_wif: node.private_key.to_wif(compressed: true, network: NETWORK),
