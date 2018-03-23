@@ -8,7 +8,11 @@
     "invalid": {
       "checksum": "EQQ8FQ2g68Pm1W2fWG5E4vrf8Gkd1DsyAN5WDcoyhW4X8dyniedfXAYBsYem5Rn1Hcd3cfBveLNu5Mx6oW3Bp16h1XbcAiVZRQEsUDATyidwPKBa",
       "version_09": "EQQ8FQf6T8Pm1W2fWG5E4vrf8Gkd1DsyAN5WDcoyhW4X8dyniedfXAYBsYem5Ryfkg1jomjz19JPJoRpoDxnTVnPKRpfRSKz4s8zrB6WJgNpJAwb"
-    } 
+    },
+    "cosigners_keys": [
+      "EQQ8FQfKnUTakMjRsA4qhL1iz2rVZyEWNnnsipQrhHtouyggEGVzE1BiDGTUxVxaw7Fy3Tn2oaKdhdoFWUCviU8uuYU9K5i3PR9yvPYZmn2qWAkQ",
+      "EQQ8FQdZopEVfDDABcryr2YSZPA2KnWrzmZQhyzNrPZmPKALtmVF9pDbkFkTEGyL2CHaEEToXdnuks5SPH9CrBFcFjTuM8rpKi5FS9KzjGEgBiGc"
+    ]
   },
   "compressed": {
     "valid": "02487c7b48d10e88c69ecfd5afbceb632e67bf765555ba8f55a7aef2229addac37"

@@ -19,15 +19,9 @@ require 'multisig-money-tree'
 # COIN = 'bitcoin'
 COIN = 'thebestcoin'
 NETWORK = "#{COIN}_testnet".to_sym
-NODE = 1
+COUNT_GENERATED_ADDRESSES = 10
 COSIGNERS_COUNT = 2
 REQUIRED_SIGNS = 2
-
-# Pre-generated bip45 public keys for node M/45
-BIP45KEYS = {
-  thebestcoin_testnet: "2DhbqvYUoAPXA3Cp34dGRS8Mdvjauqx3zXf4KyGPnKaW9Zu4MZPoNUCK53gWMqEV21m8thAq5XPC6oFy1mz6payxrnFqnctpnzn2AMzY8JYLycr5gEMsQaVGgXxvUktbMb56GoLSD81haHK8wtsjrjN841hU1VF5EySFqnrPfcn2V88aF9k2jgnuXtE5jpdQr4KoeUHjEjmXC99Bcn7bjuzBRxAv89kDhSFWy2vukYvYKDTkFyqGdRXuB6FjvHwnujYZ3PKFzbEdvNzAYs1fjSuHyXCDrFJrFfbBGn4HRwZm2KFUsn3cgGy4yDyzroyqLz53aNdpbitv15o3iS8T3LnjoNqoh",
-  bitcoin_testnet: "UCEprTQ5bbeFXFrnkQQJ7wgFNLdnxZCoJXv3ytZ4rN1hwm71NuLRi6nP8cLjxuGMQFHxMHTKZHiohFAyNzZyfPiSCZTDnGzjDAKraZbfE2H46Gfgfi2WzNr6qDSMjzGKxKFStu4scNbDayiU5BB2AUVNCkWfAMSQyasDdQFo67dyKVeYmRrbPgBrBp76HtUpL9bKZg8BpumXuCmy7rgEbT7Cisd3EdNVoSiyWZwzgFDSCBeApZTVXjuPmx1HQPTarA5xxuPzyUmheRAxZXgEQd6jNBApFZVsg1zqTJ657TKnqTPmMperZEvHYGM4daE2ZrRY72n3KVvWp7XhXZrv"
-}
 
 # Generate new wallets
 # ==== Arguments
@@ -43,137 +37,76 @@ def seed(cosigner_index)
   }
 end
 
-# Get multisig address by public bip32 keys
+# Generate new master node from Cosigner
 # ==== Arguments
-# * +wallet+ Hash with pub/priv cosigner keys
-# * +node_id+ Integer address index
-# * +cosigners_count+ Integer cosigners count
-# * +required_signs+ Integer required signs
+# * +wallet+ Hash for save master
+# * +index+ Integer new cosigner index
 # ==== Result
-# Returned hash with address, redeem_script, public (bip45) key
-def node_multisig wallet, node_id, cosigners_count, required_signs
+# Saved to wallet hash master node with private/public key
+def init_cosigner_master(wallet, index)
+  key = "cosigner#{index}".to_sym
+  wallet[key] = {}
+  wallet[key][:master] = seed(index)
+end
+
+# Generate BIP45 pubkey from cosigner master public keys
+# ==== Arguments
+# * +wallet+ Hash for save master
+# * +cosigners_count+ Integer number cosigners in multisig-process
+# * +required_signs+ Integer required number signs for send transaction
+# ==== Result
+# Saved to wallet hash bip45 public key
+def init_bip45_pubkey(wallet, cosigners_count, required_signs)
   # Get all cosigners public bip32 keys to hash with indexes
   keys = {}
   cosigners_count.times do |i|
-    keys[i] = wallet["cosigner#{i}".to_sym][:nodes][node_id][:public][:pubkey]
+    keys[i] = wallet["cosigner#{i}".to_sym][:master][:public]
   end
-
+  
   opts = {
     required_signs: required_signs,
     public_keys: keys,
     network: NETWORK
   }
   node = MultisigMoneyTree::BIP45Node.new(opts)
-  {
-    address: node.to_address,
-    redeem_script: node.redeem_script.hth,
-    public_key: node.to_bip45(network: NETWORK)
+  
+  wallet[:bip45] = {}
+  wallet[:bip45][:public] = node.to_bip45(network: NETWORK)
+end
+
+# Generate net multisig address from bip45 master public key
+# ==== Arguments
+# * +wallet+ Hash for save master
+# * +node_index+ Integer number node
+# ==== Result
+# Saved to wallet new multisig address
+def init_multisig_deposit_address(wallet, node_index)
+  master = MultisigMoneyTree::Master.from_bip45(wallet[:bip45][:public])
+  node = master.node_for(0, node_index)
+  
+  wallet[:addresses] = {} if wallet[:addresses].nil?
+  wallet[:addresses][node_index] = {
+    address: node.to_address(network: NETWORK)
   }
 end
 
-def multisig_node_from_bip45(node_id)
-  master = MultisigMoneyTree::Master.from_bip45(BIP45KEYS[NETWORK])
-  node = master.node_for(0, node_id)
-  {
-    address: node.to_address,
-    redeem_script: node.redeem_script.hth,
-    public_key: node.to_bip45(network: NETWORK)
-  }
-end
-
-# Get bip45 node (priv/public) by cosigner key and address index
-# ==== Arguments
-# * +wallet+ Hash with pub/priv cosigner keys
-# * +cosigner_index+ Integer cosigner index (for get key)
-# * +key_type+ Symbol type key :public or :private
-# * +node_id+ Integer address index
-# ==== Result
-# Returned hash with keys
-#   For key_type = :private
-#     pubkey, address, privkey, privkey_wif
-#   For key_type = :public
-#     pubkey, address
-def bip45_node(wallet, cosigner_index, key_type = :public, node_id)
-  # Get key from wallet keys storege by index
-  key = wallet["cosigner#{cosigner_index}".to_sym][:master][key_type]
-
-  # Get master node
-  master = MultisigMoneyTree::Master.from_bip32(cosigner_index, key)
-  # get bip45 node by change flag and index
-  node = master.node_for(0, node_id)
-
-  # generate address, keys
-  result = {
-      pubkey: node.to_bip32(:public, network: NETWORK),
-      address: node.to_address(network: NETWORK)
-  }
-  result.merge!({
-    privkey: node.to_bip32(:private, network: NETWORK),
-    privkey_wif: node.private_key.to_wif(compressed: true, network: NETWORK),
-  }) if master.private_key?
-
-  result
-end
-
-# Generate wallet for new cosigner
-# ==== Arguments
-# * +wallet+ Hash for save master and bip45 node pub/priv keys
-# * +cosigner_index+ Integer new cosigner index
-# * +node_index+ Integer address index
-# ==== Result
-# Saved to wallet hash master node and node for node_index with keys
-def init_cosigner_wallet(wallet, cosigner_index, node_index)
-  key = "cosigner#{cosigner_index}".to_sym
-  wallet[key] = {} if wallet[key].nil?
-  wallet[key][:nodes] = {} if wallet[key][:nodes].nil?
-
-  # seed master node
-  wallet[key][:master] = seed(cosigner_index) if wallet[key][:master].nil?
-
-  # generate new node for +node_index+
-  wallet[key][:nodes][node_index] = {
-    public: bip45_node(wallet, cosigner_index, :public, node_index),
-    private: bip45_node(wallet, cosigner_index, :private, node_index)
-  } if wallet[key][:nodes][node_index].nil?
-end
-
-# Generate multisig address
-# ==== Arguments
-# * +wallet+ Hash with pub/priv cosigner keys
-# * +node_index+ Integer address index
-# * +cosigners_count+ Integer cosigners count
-# * +required_signs+ Integer required signs
-# ==== Result
-# Saved to wallet hash multisig node with index +node_index+
-def init_multisig_address(wallet, node_index, cosigners_count, required_signs)
-  wallet[:multisig] = {} if wallet[:multisig].nil?
-  wallet[:multisig][:nodes] = {} if wallet[:multisig][:nodes].nil?
-
-  wallet[:multisig][:nodes][node_index] = node_multisig(wallet, node_index, cosigners_count, required_signs) if wallet[:multisig][:nodes][node_index].nil?
-end
-
-def init_multisig_address_from_bip45(wallet, node_index)
-  wallet[:multisig][:nodes][node_index] = multisig_node_from_bip45(node_index) if wallet[:multisig][:nodes][node_index].nil?
-end
 
 # File for save wallet hash
 wallet_file = "test-gem-wallet-#{COIN}.yml"
 wallet = {}
 
-# Init master and first node for cosigners
+# Init master for all cosigners
 COSIGNERS_COUNT.times do |cosigner_index|
-  init_cosigner_wallet(wallet, cosigner_index, NODE)
+  init_cosigner_master(wallet, cosigner_index)
 end
 
-# Init mulstisig address for cosigners
-init_multisig_address(wallet, NODE, COSIGNERS_COUNT, REQUIRED_SIGNS)
+# Create bip45 master node and save to wallet hash
+init_bip45_pubkey(wallet, COSIGNERS_COUNT, REQUIRED_SIGNS)
 
-puts "Multisig address was successfully generated:"
-puts "\tAddress: #{wallet[:multisig][:nodes][NODE][:address]}"
-puts "\tRedeem Script: #{wallet[:multisig][:nodes][NODE][:redeem_script]}"
-puts "\tPublic Key: #{wallet[:multisig][:nodes][NODE][:public_key]}"
-
-init_multisig_address_from_bip45(wallet, NODE + 1)
+# Create multisig addresses from bip45 master node
+COUNT_GENERATED_ADDRESSES.times do |node_index|
+  init_multisig_deposit_address(wallet, node_index)
+end
 
 # Save wallet data
 File.write(wallet_file, YAML.dump(wallet))

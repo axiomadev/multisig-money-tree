@@ -1,0 +1,32 @@
+---
+:cosigner0:
+  :master:
+    :private: EQQ8svVCW7Jd3WHr9YU5Hus5e1wRNLpvcffppvy7nyT7AXGSa72jsLqhXbdv7RMnsPN2PdzmV7sRdkofjpRfozXTjdHbbKiDTgru8whNDcNCjWQh
+    :public: EQQ8FQfKnUTakMjRsA4qhL1iz2rVZyEWNnnsipQrhHtouyggEGVzE1BiDGTUxVxaw7Fy3Tn2oaKdhdoFWUCviU8uuYU9K5i3PR9yvPYZmn2qWAkQ
+:cosigner1:
+  :master:
+    :private: EQQ8svTSXT5XxMmaU1GDScPoDNEx8A7HEeSMp6Ydx584drk7Ec1zo9sb4avtPCP5s4Zswwq1a3y9GzrCMWgSiAfRRS3wkPNTF1xiRqznTbdzdqWg
+    :public: EQQ8FQdZopEVfDDABcryr2YSZPA2KnWrzmZQhyzNrPZmPKALtmVF9pDbkFkTEGyL2CHaEEToXdnuks5SPH9CrBFcFjTuM8rpKi5FS9KzjGEgBiGc
+:bip45:
+  :public: 2DhbqvYUoAPXA3Cp34dGRS8Mdvjauqx3zXf4KyGPnKbCU59eeVmqNdrdwVpTvANpraj8Mh7Y9QLckUtc6e8ZNVDx4QEmKLUqrz72Pr16QjskCPTieU6KfDidYWQCpDuaLDnS1cCyKr4ALSbk9BAV4o53ccUYgXs4prDcZ7hmhk3dgKJqNXncsY5qHJ7n2KRsTDjS82HRNWYtWCWHsB4c1Bah2HZoi46ccW61TBsowFzojVizruXe6xYy3pYCzgFZcWZ327VfzaesMENMdEZYhLHtvrq2XJFsH5WDqhacK8VfanGr5rGjhbhYqoCCMftkKew7HEjDeAQ4AZjt8p96jeThmzDWj
+:addresses:
+  0:
+    :address: c7dC47Cppg91iTXKzLnTm5mizg9htQHmJp
+  1:
+    :address: c1ja3dsithg6Aji1WAghoc6z7cvykvFZix
+  2:
+    :address: c322ybC8iuQAnt8b3LBpfjPDaozkcTzmJQ
+  3:
+    :address: cK3JzZEoJ5emyzHgEfiNgzz2VZdiWPHm7b
+  4:
+    :address: cM36sMHrJEAfgFTDpoziywdDfJQqvR7mKW
+  5:
+    :address: cB66yEYH8Njgp3HN4NTfyr6hRS9coVUtRR
+  6:
+    :address: cCYtB1q4KTEC4VRDdyjWMidfBLcf6pV8yJ
+  7:
+    :address: c9ygp8vh47ivyEPZhQj2vRZ41i2B1W7vLd
+  8:
+    :address: cDcrYPdf7HbRFN5HZx7HKFgJ3JbjtTST3Q
+  9:
+    :address: cM2P6jmbW9DzkVKgWPcdigzysiEPM1rqmo

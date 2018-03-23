@@ -70,6 +70,31 @@ describe MultisigMoneyTree::BIP45Node do
     end
   end
   
+  describe '#initialize' do
+    it 'check with correct params' do
+      pubkeys = keys[:master][:cosigners_keys].each_with_index.map do |key, index|
+        [index, key]
+      end.to_h
+      opts = {
+        required_signs: 2,
+        public_keys: pubkeys,
+        network: :thebestcoin_testnet
+      }
+      expect(MultisigMoneyTree::BIP45Node.new(opts)).to be_a(MultisigMoneyTree::BIP45Node)
+    end
+    
+    it 'check with incorect public keys (without indexes)' do
+      opts = {
+        required_signs: 2,
+        public_keys: keys[:master][:cosigners_keys],
+        network: :thebestcoin_testnet
+      }
+      expect { 
+        MultisigMoneyTree::BIP45Node.new(opts)
+      }.to raise_error(MultisigMoneyTree::Error::InvalidParams)
+    end
+  end
+  
   describe '#node_for' do
     it 'check return bip45 node' do
       bip45 = MultisigMoneyTree::Master.from_bip45(keys[:master][:valid][:bip45])
@@ -115,7 +140,7 @@ describe MultisigMoneyTree::BIP45Node do
     
     it 'check set network by attribute' do
       bip45node = MultisigMoneyTree::Master.from_bip45(keys[:bip45][:valid][:public])
-      expect(bip45node.to_address(network: :thebestcoin)).to eql('8ZjtBNXBpj2aqKVXEc4TAqzZBhuW76ZCzB')
+      expect(bip45node.to_address(network: :thebestcoin)).to eql(keys[:bip45][:valid][:address])
     end
   end
   

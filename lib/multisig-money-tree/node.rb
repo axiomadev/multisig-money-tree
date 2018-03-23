@@ -131,13 +131,6 @@ module MultisigMoneyTree
         public_keys: new_public_keys
       })
     end
-
-    # Load public cosigner node for get cosigners public keys in hex format
-    def load_cosigners_nodes
-      @cosigners_nodes = @public_keys.map do |index, key|
-        [index.to_i, MultisigMoneyTree::Master.from_bip32(index.to_i, key)]
-      end.to_h
-    end
     
     # Generate multisig address
     #
@@ -175,7 +168,7 @@ module MultisigMoneyTree
     # ==== Arguments
     # * +network+ Symbol network name
     def network=(network)
-      @network = network.to_sym
+      MultisigMoneyTree.network = @network = network.to_sym
     end
     
     # Get number required signs
@@ -218,16 +211,23 @@ module MultisigMoneyTree
       opts.join(';').unpack('H*').first
     end
     
+    # Load public cosigner node for get cosigners public keys in hex format
+    def load_cosigners_nodes
+      MultisigMoneyTree.network = @network
+      check_public_keys
+      
+      @cosigners_nodes = @public_keys.map do |index, key|
+        [index.to_i, MultisigMoneyTree::Master.from_bip32(index.to_i, key)]
+      end.to_h
+    end
+    
     # Generate cosigner public keys in hex format by public nodes
     def parse_public_keys
       # Convert keys to compressed_hex format for bitcoin-ruby
       @public_keys_hex = @cosigners_nodes.map { |index, key| key.public_key.to_hex }
     end
     
-    def check_bip45_opts
-      # Set current network to ruby-bitcoin gem
-      MultisigMoneyTree.network = network
-      
+    def check_bip45_opts  
       # https://github.com/bitcoin/bips/blob/master/bip-0045.mediawiki#cosigner-index
       # Quote: The indices can be determined independently by lexicographically sorting the purpose public keys of each cosigner
       @public_keys_hex.sort! { |a,b| a <=> b}
@@ -237,6 +237,11 @@ module MultisigMoneyTree
       #        Wallet software should warn when user is trying to exceed the gap limit on an external chain by generating a new address. 
       raise Error::InvalidParams, "Address gap limit" unless [@required_signs, @public_keys_hex.size].all?{|i| (0..MAX_COSIGNER).include?(i) }
       raise Error::InvalidParams, "Invalid m-of-n number" if @public_keys_hex.size < @required_signs
+    end
+    
+    def check_public_keys
+      raise Error::InvalidParams, "Invalid public keys options" unless @public_keys.kind_of?(Hash)
+      raise Error::InvalidParams, "Invalid cosigner indexes in public keys" unless @public_keys.keys.all?{|i| valid_cosigner_index?(i.to_i) }
     end
   end
 end
