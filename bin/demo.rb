@@ -62,7 +62,7 @@ def init_bip45_pubkey(wallet, cosigners_count, required_signs)
   cosigners_count.times do |i|
     keys[i] = wallet["cosigner#{i}".to_sym][:master][:public]
   end
-  
+
   opts = {
     required_signs: required_signs,
     public_keys: keys,
@@ -89,7 +89,6 @@ def init_multisig_deposit_address(wallet, node_index)
     address: node.to_address(network: NETWORK)
   }
 end
-
 
 # File for save wallet hash
 wallet_file = "test-gem-wallet-#{COIN}.yml"
