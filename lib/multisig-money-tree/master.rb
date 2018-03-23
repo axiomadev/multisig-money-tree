@@ -66,8 +66,6 @@ module MultisigMoneyTree
           public_keys.map! { |key| key.split(':') }
         rescue EncodingError => e
           raise Error::ChecksumError, 'Invalid bip45 public key'
-        rescue Error::InvalidParams => e
-          raise Error::ImportError, 'Invalid bip45 public key'
         end
 
         BIP45Node.new({

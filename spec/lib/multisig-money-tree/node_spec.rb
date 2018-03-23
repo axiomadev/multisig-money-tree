@@ -36,7 +36,7 @@ describe MultisigMoneyTree::BIP45Node do
     
     it 'check parse pubkey with invalid format keys' do
       expect {
-        MultisigMoneyTree::Master.from_bip45(keys[:bip45][:invalid][:invalid_format_base58])
+        MultisigMoneyTree::Master.from_bip45(keys[:bip45][:invalid][:invalid_format_cosigner_keys])
       }.to raise_error(MultisigMoneyTree::Error::ImportError)
     end
   end
