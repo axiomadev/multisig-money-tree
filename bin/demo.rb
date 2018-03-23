@@ -74,7 +74,7 @@ def init_bip45_pubkey(wallet, cosigners_count, required_signs)
   wallet[:bip45][:public] = node.to_bip45(network: NETWORK)
 end
 
-# Generate net multisig address from bip45 master public key
+# Generate new multisig address from bip45 master public key
 # ==== Arguments
 # * +wallet+ Hash for save master
 # * +node_index+ Integer number node
