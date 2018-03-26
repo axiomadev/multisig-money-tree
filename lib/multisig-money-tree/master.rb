@@ -2,7 +2,7 @@ module MultisigMoneyTree
   class Master < Node
     # Instace of MultisigTree::Master master node
     attr_reader :master
-    
+
     class << self
       # Generate new +Private+ Node for specific cosigner
       #
@@ -13,9 +13,9 @@ module MultisigMoneyTree
       # Returned instace of MultisigMoneyTree::Node class for path +m/45+
       def seed(cosigner_index, network: :bitcoin)
         raise Error::InvalidCosignerIndex, 'Invalid cosigner index' unless valid_cosigner_index?(cosigner_index)
-        
+
         MultisigMoneyTree.network = network
-        
+
         @master = MoneyTree::Master.new network: MultisigMoneyTree.network
 
         Node.new({
@@ -23,7 +23,7 @@ module MultisigMoneyTree
           node: @master.node_for_path('m/45')
         })
       end
-      
+
       # Creating a Master Node using the private/public key specific cosigner
       #
       # ==== Arguments
@@ -31,9 +31,9 @@ module MultisigMoneyTree
       # * +cosigner_master+ String cosigner private/public key
       # ==== Result
       # Returned instace of MultisigMoneyTree::Master class
-      def from_bip32(cosigner_index, cosigner_master_key)   
+      def from_bip32(cosigner_index, cosigner_master_key)
         raise Error::InvalidCosignerIndex, 'Invalid cosigner index' unless valid_cosigner_index?(cosigner_index)
-         
+
         begin
           @master = MoneyTree::Node.from_bip32(cosigner_master_key)
         rescue MoneyTree::Node::ImportError => e
@@ -50,7 +50,7 @@ module MultisigMoneyTree
           node: @master
         })
       end
-      
+
       # Create BIP45 Node from BIP45 public key
       #
       # ==== Arguments
@@ -58,16 +58,20 @@ module MultisigMoneyTree
       # ==== Result
       # Returned instace of MultisigMoneyTree::BIP45Node class
       def from_bip45(public_key)
-        hex = from_serialized_base58(public_key)
-        network, count, *public_keys = [hex].pack("H*").split(";")
-        
-        # parse cosigner keys with index
-        public_keys.map! { |key| key.split(':') }.to_h
+        begin
+          hex = from_serialized_base58(public_key)
+          network, count, *public_keys = [hex].pack("H*").split(";")
+
+          # parse cosigner keys with index
+          public_keys.map! { |key| key.split(':') }
+        rescue EncodingError => e
+          raise Error::ChecksumError, 'Invalid bip45 public key'
+        end
 
         BIP45Node.new({
           network: network.to_sym,
           required_signs: count.to_i,
-          public_keys: public_keys
+          public_keys: public_keys.to_h
         })
       end
     end

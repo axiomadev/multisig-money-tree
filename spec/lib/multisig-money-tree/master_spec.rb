@@ -90,6 +90,12 @@ describe MultisigMoneyTree::Master do
       }.to raise_error((MultisigMoneyTree::Error::InvalidParams))
     end
     
+    it 'check invalid base58 bip45 pubkey' do
+      expect { 
+        MultisigMoneyTree::Master.from_bip45(keys[:bip45][:invalid][:invalid_format])
+      }.to raise_error((MultisigMoneyTree::Error::ChecksumError))
+    end
+    
     it 'check extracted options' do
       expect(bip45node.network).to eql(:thebestcoin_testnet)
       expect(bip45node.required_signs).to eql(2)
