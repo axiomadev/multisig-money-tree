@@ -7,6 +7,7 @@ require 'multisig-money-tree/errors'
 require 'multisig-money-tree/networks'
 require 'multisig-money-tree/node'
 require 'multisig-money-tree/master'
+require 'multisig-money-tree/transaction'
 
 module MultisigMoneyTree
   MAX_COSIGNER = 20

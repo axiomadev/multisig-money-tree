@@ -10,6 +10,12 @@
       "version_09": "EQQ8FQf6T8Pm1W2fWG5E4vrf8Gkd1DsyAN5WDcoyhW4X8dyniedfXAYBsYem5Ryfkg1jomjz19JPJoRpoDxnTVnPKRpfRSKz4s8zrB6WJgNpJAwb"
     } 
   },
+  "cosigner": {
+    "valid": {
+      "public": "",
+      "private": ""
+    }
+  },
   "compressed": {
     "valid": "02487c7b48d10e88c69ecfd5afbceb632e67bf765555ba8f55a7aef2229addac37"
   },

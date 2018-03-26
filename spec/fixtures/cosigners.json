@@ -1,0 +1,11 @@
+{
+  "cosigner0": {
+    "private": "EQQ8svUB8DNYGeSG9feXsbCZjxmBuqfajbsPMJKqQUFkbNXA8sWMSDgvwnDK7AxuweH9eJBBJcEHDCGzNxdVWKcGEVjtx2eP6KrCReShHJH8uNFD",
+    "public": "EQQ8FQeJQaXVyVsqsHFJH1MD5ygG7U5AVizSFBmaJnhTLpwPo2ybnt2wdT2sxFc8qbHuSuquXrjvNJP6rPzAKQSYZ724NfEZig6qUv77wxAxdQVW"
+  },
+  "cosigner1": {
+    "private": "EQQ8svVAnufpJR4FGvT856LXEBgNKMZULX43okS14Kq1iHNytZ3fPfYHvdYa24EUs2sJp2ibVFqozrR8NKFgJpyV34Dhr4hivkDxQzPVANbCWhac",
+    "public": "EQQ8FQfJ5Gpn1GVpzY3tUWVAaCbSWyy46eB6hdsjxeGiTjoDYiWukKtJcJN8s8tgx5xgntj5duPSypeZ8nfhPquNc1uRwMEqjUPn3NwwjrZtH5Y6"
+  },
+  "bip45": "2DhbqvYUoAPXA3Cp34dGRS8Mdvjauqx3zXf4KyGPnKaWTsEsna3ofotULF24h8HXHNhbHfo76NF7G4iPMqjqg38baKmmpejEBuavtAEvVSkYvQMqH73NKva1VCmG4DBFbgZgZxAW1Jjy8bVwhfDXnZQnRDSAdKrHiHnbbpeLqgfHra5fuiRAddbRNLtrBm4tVEtkj1LvpekHmF7PQKrC4zWCpLKYk9QwwLZw8odWAARPeWG1PUgdseW46UcFskain1sQNJq6rchX3ahtvt8FTFLiP2JnXtztawskQ38uqZkgspWhRu1N8QsLVVBie8D3rsHuJnLcC51iQhBK9yuPDQo8sfCuz"
+}
